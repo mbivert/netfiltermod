@@ -18,11 +18,11 @@ static const struct modversion_info ____versions[]
 __used
 __attribute__((section("__versions"))) = {
 	{ 0xad12b0d5, "module_layout" },
-	{ 0xd0d8621b, "strlen" },
 	{ 0x966afc66, "nf_register_hook" },
 	{ 0xb72397d5, "printk" },
 	{ 0xb4390f9a, "mcount" },
 	{ 0xa5a11c5f, "nf_unregister_hook" },
+	{ 0x684b380, "dev_get_stats" },
 };
 
 static const char __module_depends[]
@@ -31,4 +31,4 @@ __attribute__((section(".modinfo"))) =
 "depends=";
 
 
-MODULE_INFO(srcversion, "901BF55C5864A45CA6AE827");
+MODULE_INFO(srcversion, "F1093692D72DEC9C3D31FC9");

@@ -13,6 +13,7 @@
 #include <linux/kernel.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
+#include <linux/netdevice.h>
 #include <linux/init.h>
 #include <linux/skbuff.h>
 #include <linux/tcp.h>
@@ -63,6 +64,8 @@ hook_func(unsigned int hooknum, struct sk_buff *skb,
 		const struct net_device *in, const struct net_device *out,
 		int (*okfn)(struct sk_buff *)) {
 
+	const struct net_device_stats *stats;
+
 	// Ok, useless but ...
 	sock_buff = skb;
 	if (!sock_buff)
@@ -80,8 +83,28 @@ hook_func(unsigned int hooknum, struct sk_buff *skb,
 	
 	printk(KERN_CRIT "From %s to %s\n", in->name, out->name);
 
-	table[HASH(in->name)].npacket++;
-	table[HASH(out->name)].npacket--;
+	/* table[HASH(in->name)].npacket++;
+	table[HASH(out->name)].npacket--; */
+
+	stats = dev_get_stats((struct net_device *)in);
+
+	printk(KERN_CRIT  "%6s:%8lu %7lu %4lu %4lu %4lu %5lu %10lu %9lu "
+		"%8lu %7lu %4lu %4lu %4lu %5lu %7lu %10lu\n",
+		in->name, stats->rx_bytes, stats->rx_packets,
+		stats->rx_errors,
+		stats->rx_dropped + stats->rx_missed_errors,
+		stats->rx_fifo_errors,
+		stats->rx_length_errors + stats->rx_over_errors +
+		stats->rx_crc_errors + stats->rx_frame_errors,
+		stats->rx_compressed, stats->multicast,
+		stats->tx_bytes, stats->tx_packets,
+		stats->tx_errors, stats->tx_dropped,
+		stats->tx_fifo_errors, stats->collisions,
+		stats->tx_carrier_errors +
+		stats->tx_aborted_errors +
+		stats->tx_window_errors +
+		stats->tx_heartbeat_errors,
+		stats->tx_compressed);
 
 	printtable();
 
