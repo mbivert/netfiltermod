@@ -22,6 +22,8 @@
 #include <linux/vmalloc.h>
 #include <net/ip.h>
 
+#include <linux/mutex.h>
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,16)
 #include <linux/in.h>
 #include <linux/ip.h>
@@ -35,6 +37,8 @@ static int outputRate_eth1 = 1000;
 static int outputRate_eth2 = 10; 
 module_param(outputRate_eth1, int, 0);
 module_param(outputRate_eth2, int, 0);
+
+static DEFINE_MUTEX(stats_mutex);
 
 static int stats_packets[NB_INTFS][NB_STATS] = { { 0 } };
 
@@ -108,8 +112,12 @@ unsigned int hook_func_post(unsigned int hooknum, struct sk_buff *skb, const str
 	printk(KERN_CRIT "In: %s | Out: %s", in->name, out->name);
 
 	index = hash_index(out->name);
+
+	mutex_lock((struct mutex*) &stats_mutex);
 	stats_packets[index][1]++; // O++
 	stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
+	mutex_unlock((struct mutex*) &stats_mutex);
+
 	printk(KERN_CRIT "InputRate: %d\n", stats_packets[index][0]);
 	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);	
 
@@ -142,15 +150,19 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 	printk(KERN_CRIT "\nPRE");
 	printk(KERN_CRIT "In: %s | Out: %s", in->name, out->name);
 
+	mutex_lock((struct mutex*) &stats_mutex);
 	if (ip_header->daddr == 29935816) { // Target: 200.200.200.1 via eth2
 		index = hash_index("eth2");
 		stats_packets[index][0]++;
 		stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
+
 	} else if (ip_header->daddr == 23356516) { // Target: 100.100.100.1 via eth1
 		index = hash_index("eth1");
 		stats_packets[index][0]++;
 		stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
 	}
+	mutex_unlock((struct mutex*) &stats_packets);
+
 	printk(KERN_CRIT "InputRate: %d\n", stats_packets[index][0]);
 	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
 
