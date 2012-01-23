@@ -22,7 +22,7 @@
 #include <linux/vmalloc.h>
 #include <net/ip.h>
 
-#include <linux/mutex.h>
+#include <linux/spinlock.h>
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,16)
 #include <linux/in.h>
@@ -38,7 +38,7 @@ static int outputRate_eth2 = 10;
 module_param(outputRate_eth1, int, 0);
 module_param(outputRate_eth2, int, 0);
 
-static DEFINE_MUTEX(stats_mutex);
+static DEFINE_SPINLOCK(lock); 
 
 static int stats_packets[NB_INTFS][NB_STATS] = { { 0 } };
 
@@ -113,13 +113,12 @@ unsigned int hook_func_post(unsigned int hooknum, struct sk_buff *skb, const str
 
 	index = hash_index(out->name);
 
-	//mutex_lock(&stats_mutex);
+	spin_lock_irq(&lock);
 	stats_packets[index][1]++; // O++
 	stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
-	//mutex_unlock(&stats_mutex);
-
 	printk(KERN_CRIT "InputRate: %d\n", stats_packets[index][0]);
-	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);	
+	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
+	spin_unlock_irq(&lock);
 
 	return NF_ACCEPT;
 }
@@ -159,13 +158,12 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 		return NF_ACCEPT;
 	}
 	
-	// mutex_lock((struct mutex*) &stats_mutex);
+	spin_lock_irq(&lock);
 	stats_packets[index][0]++;
 	stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
-	// mutex_unlock((struct mutex*) &stats_packets);
-
 	printk(KERN_CRIT "InputRate: %d\n", stats_packets[index][0]);
 	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
+	spin_unlock_irq(&lock);
 
 	return NF_ACCEPT;
 }
@@ -173,6 +171,7 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 /* Initialisation routine */
 int init_module()
 {
+
 	/* Fill in our hook structure */
 	nfho_forward.hook     = hook_func_forward;         /* Handler function */
 	nfho_forward.hooknum  = NF_INET_FORWARD; /* NF_IP_FORWARD */
