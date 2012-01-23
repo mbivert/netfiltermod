@@ -1,0 +1,27 @@
+sudo dmesg -c /dev/null
+sudo make
+sudo insmod netfiltermod-ex.ko
+sleep 5
+#sudo rmmod netfiltermod-ex.ko
+#dmesg | tail
+sudo dmesg
+
+#ifconfig eth0:1 [xxx.xxx.xxx.xxx] netmask 255.255.255.0 ([...] = ip) // créer une interface virtuelle
+#route add default gw 10.0.2.2 // ajouter une route par défaut
+#route add default gw 10.0.2.2 dev eth0:1 // ajouter une route par défaut
+
+#route del default gw 10.0.2.2 // supprimer une route par défaut
+
+#route add -net 10.0.2.0 netmask 255.255.255.0 tap0
+
+#tunctl -t tap0
+#ifconfig tap0 0.0.0.0 up
+#(requires uml-utilities on guest
+
+#route del -net 200.200.200.0 netmask 255.255.255.0
+#route add default gw mindvm.local eth0
+#route add -net 100.100.100.0 netmask 255.255.255.0 gw 100.100.100.1
+
+#===== TCP =====
+#Receiver : iperf -s
+#Sender :   iperf -c <ip-receiver>

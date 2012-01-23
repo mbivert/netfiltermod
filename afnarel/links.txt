@@ -1,0 +1,4 @@
+http://techblog.aasisvinayak.com/kernel-module-programming-tutorial/
+http://linux.die.net/lkmpg/index.html
+http://lxr.linux.no/
+http://www.netfilter.org/documentation/HOWTO/netfilter-hacking-HOWTO-3.html

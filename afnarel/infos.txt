@@ -1,0 +1,41 @@
+===== Infos & outils =====
+
+kmod (anciennement kerneld) = kernel module daemon
+(charge les modules en executant modprobe)
+
+lsmod (lit dans /proc/modules)
+
+insmod / rmmod
+(eventuellement modprobe / modprobe -r)
+
+depmod -a
+
+modprobe, insmod et depmod dans module-init-tools (anciennement modutils)
+
+Si on est dans une console, les messages sont affichés directement dans la
+console, sinon (si on est sous X, dans un xterm) ils sont visibles uniquement
+dans les fichiers de log (dmesg)
+
+strace : trace system calls and signals
+strace modprobe unmodule : pour savoir comment est chargé un module
+
+modinfo monmodule.ko : affiche les informations contenues dans la section .modinfo du module.
+
+===== Includes =====
+<linux/module.h> : pour tous les modules
+<linux/kernel.h> : pour avoir accès à KERN_ALERT par exemple
+
+===== Base =====
+
+Une fonction exécutée juste après l'insmod et une exécutée juste avant le rmmod.
+Avant kernel 2.3.13 : int init_module(void) et void cleanup_module(void).
+Depuis, ce qu'on veut.
+init : peut redéfinir une fonction du kernel (et éventuellement appeler la fonction originale)
+cleanup : défait tout ce qui a été fait dans init
+
+// LOG
+printk(priorite, message) : mechanisme de log
+"priorite" est un define de HEADERS_PATH/include/linux/kernel.h
+Si on ne précise pas de priorité, un niveau de priorité par défaut sera utilisé
+Si la priorité est inférieure à "console_loglevel", le message est affiché dans la console
+Si syslogd ET klogd sont lancés le message apparaitra dans /var/log/messages (-> dmesg)
