@@ -113,10 +113,10 @@ unsigned int hook_func_post(unsigned int hooknum, struct sk_buff *skb, const str
 
 	index = hash_index(out->name);
 
-	mutex_lock((struct mutex*) &stats_mutex);
+	//mutex_lock(&stats_mutex);
 	stats_packets[index][1]++; // O++
 	stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
-	mutex_unlock((struct mutex*) &stats_mutex);
+	//mutex_unlock(&stats_mutex);
 
 	printk(KERN_CRIT "InputRate: %d\n", stats_packets[index][0]);
 	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);	
@@ -127,7 +127,7 @@ unsigned int hook_func_post(unsigned int hooknum, struct sk_buff *skb, const str
 /* Hook function: PRE */
 unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
 
-	int index;
+	int index = 42;
 
 	// Ok, useless but ...
 	sock_buff = skb;
@@ -150,18 +150,19 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 	printk(KERN_CRIT "\nPRE");
 	printk(KERN_CRIT "In: %s | Out: %s", in->name, out->name);
 
-	mutex_lock((struct mutex*) &stats_mutex);
 	if (ip_header->daddr == 29935816) { // Target: 200.200.200.1 via eth2
 		index = hash_index("eth2");
-		stats_packets[index][0]++;
-		stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
-
 	} else if (ip_header->daddr == 23356516) { // Target: 100.100.100.1 via eth1
 		index = hash_index("eth1");
-		stats_packets[index][0]++;
-		stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
 	}
-	mutex_unlock((struct mutex*) &stats_packets);
+	if (index == 42) {
+		return NF_ACCEPT;
+	}
+	
+	// mutex_lock((struct mutex*) &stats_mutex);
+	stats_packets[index][0]++;
+	stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
+	// mutex_unlock((struct mutex*) &stats_packets);
 
 	printk(KERN_CRIT "InputRate: %d\n", stats_packets[index][0]);
 	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
