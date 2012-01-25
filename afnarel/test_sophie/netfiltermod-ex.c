@@ -151,9 +151,9 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 	printk(KERN_CRIT "In: %s | Out: %s", in->name, out->name);
 
 	if (ip_header->daddr == 29935816) { // Target: 200.200.200.1 via eth2
-		index = hash_index("eth2");
-	} else if (ip_header->daddr == 23356516) { // Target: 100.100.100.1 via eth1
 		index = hash_index("eth1");
+	} else if (ip_header->daddr == 23356516) { // Target: 100.100.100.1 via eth1
+		index = hash_index("eth0");
 	}
 	if (index == 42) {
 		return NF_ACCEPT;

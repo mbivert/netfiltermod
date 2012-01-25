@@ -1,0 +1,149 @@
+netfilter = firewall au niveau du noyau. On peut le contrôler avec iptables
+mais on peut aussi créer des hooks.
+
+#Netfilter @ irc.freenode.org
+
+auto-negotiation: choose between half-duplex and full-duplex (most optimal) if the card supports it.
+
+http://ftp.gnumonks.org/pub/doc/packet-journey-2.4.html <==== COOL !!!
+
+ip_rcv_finish() : netfilter hook in which the packet's final destination is determined by
+calling the routing function net/ipv4/route.c:ip_route_input().
+
+1. skb->dst NULL ==> reçu du monde extérieur
+	ip_route_input --> skb->dst <- destination +++ INET_FORWARD (ip_forward())
+
+2. A destination de cet host ==> ip_local_deliver() INET_LOCAL_[IN/OUT]
+
+3. Erreur : ip_error()
+
+When source route options are present in the IP options, opt−>srr is not NULL
+
+
+Initialise the virtual path cache for the
+packet. It describes how the packet travels
+inside Linux networking.
+
+if (skb−>dst == NULL) {
+	if (ip_route_input(skb, iph−>daddr,
+		iph−>saddr, iph−>tos, dev))
+		goto drop;
+}
+
+#ifdef CONFIG_NET_CLS_ROUTE
+	if (skb−>dst−>tclassid) {
+		struct ip_rt_acct *st = ip_rt_acct + 256 * smp_processor_id();
+		u32 idx = skb−>dst−>tclassid;
+		st[idx&0xFF].o_packets++;
+		st[idx&0xFF].o_bytes+=skb−>len;
+		st[(idx>>16)&0xFF].i_packets++;
+		st[(idx>>16)&0xFF].i_bytes+=skb−>len;
+	}
+#endif
+
+=========================================================
+
+http://www.nbs-system.com/blog/howto-iptables.html#nf_ipt
+
+Section 5
+Donc on doit travailler dans INET_FORWARD
+
+Quand un nouveau paquet arrive, il est d’abord inspecté pour savoir sa source et sa destination. Le firewall confronte ces informations avec ses propres règles et détermine s’il s’agit d’un paquet « en transit », c’est à dire qui ne fait que passer d’une de ses interfaces à une autre, ou s’il lui est adressé.
+
+Si le paquet lui est adressé il est confronté au filtre INPUT sinon il passera dans le filtre FORWARD de toute façon (même en cas de NAT, voir plus bas).
+
+Si le paquet sort du firewall c’est la chaîne OUTPUT qui est concernée.
+
+Ca, c'est clair !!!
+
+===========================================================
+
+http://fr.wikipedia.org/wiki/Netfilter
+
+Les modules de Netfilter qui ne prévoient pas de tableaux (voir ci-dessous) peuvent également vérifier l'origine des paquets pour choisir leur mode de fonctionnement.
+
+Une des caractéristiques importantes construites sur le framework Netfilter est Connection Tracking. CT permet au noyau de garder la trace de toutes les connexions réseau logiques ou de sessions, et, par conséquent, porte tous les paquets qui composent cette connexion.
+
+Chaque connexion Netfilter est identifiée de façon unique par un tuple (protocole de couche 3, adresse source, adresse de destination, protocole de couche 4, clé de couche 4). 
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[15:21] == Afnarel [9da96675@gateway/web/freenode/ip.157.169.102.117] has joined #Netfilter
+[15:21] -NickServ- This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.
+[15:21] -ChanServ- [#Netfilter] Observe the FAQ: http://tinyurl.com/myaqo6
+[15:21] <Afnarel> Hi
+[15:22] <Afnarel> I'm quite new to netfilter but I read a lot of documentation
+[15:23] <Afnarel> It seems to be possible to get the source and destination address of a packet by placing a hook on INET_FORWARD
+[15:24] <epaphus> Hello. Is it possible to segment networks in iptables? when the iptables machine acts as a router?
+[15:24] <Afnarel> But it seems it only treats one packet at a time
+[15:25] == jetole [~jetole@66.165.165.169] has quit [Ping timeout: 240 seconds]
+[15:26] <Afnarel> Actually what I want to do is create a table to keep track of the number of packets that goes from one interface to another
+[15:27] <Afnarel> And queue the packets that haven't be transmitted yet
+[15:27] <Afnarel> But my queue size is always equal to zero
+[15:33] == jetole [~jetole@66.165.165.169] has joined #Netfilter
+[15:33] == Chinorro [~chino@62.82.228.34.static.user.ono.com] has quit [Excess Flood]
+[15:33] == ika2810 [~admin@123.20.244.102] has left #Netfilter []
+[15:33] == nasso [~quassel@server.nasso.se] has joined #Netfilter
+[15:35] == Chinorro [~chino@62.82.228.34.static.user.ono.com] has joined #Netfilter
+[15:37] == Chinorro [~chino@62.82.228.34.static.user.ono.com] has quit [Excess Flood]
+[15:39] == Chinorro [~chino@62.82.228.34.static.user.ono.com] has joined #Netfilter
+[15:42] == shaibn [~shai@212.117.158.222] has quit [Quit: Leaving]
+[15:43] <diegows> epaphus: you question is not very clean :)
+[15:43] <diegows> clear
+[15:50] == meerkats [~aceofspad@179.Red-88-11-190.dynamicIP.rima-tde.net] has quit [Quit: Leaving]
+[15:54] == FinboySlick [~shark@74.117.40.10] has joined #Netfilter
+[15:58] == meerkats [~aceofspad@179.Red-88-11-190.dynamicIP.rima-tde.net] has joined #Netfilter
+[15:59] <epaphus> diegows, ok.. sorry ..  Iam asking if iptables has vlan or network segmentation capabilities
+[15:59] <diegows> no
+[15:59] <diegows> iptables is for filtering, nat, packet mangling
+[15:59] <diegows> works on layer 3
+[15:59] <diegows> 4
+[16:00] <epaphus> diegows, but when you configure it as a gateway for a LAN.. shouldnt it have these capabilities?
+[16:01] == cods [~cods@rsbac/developer/cods] has left #Netfilter []
+[16:01] <diegows> linux has vlan support, iptables works on another level
+[16:01] == cods [~cods@rsbac/developer/cods] has joined #Netfilter
+[16:02] <epaphus> diegows, when you say linux has vlan support.. you mean the creation of virtual interfaces so that later on iptables can deal with them?
+[16:08] <cods> Is there a way to list all the routing table currently defined? (by default, should gives 0, 253, 254, 255) -- Knowing that rt_tables is not up-to-date.
+[16:08] <bc547> cods: ip ro li ta all
+[16:09] <bc547> cods: which is short for 'ip route list table all'
+[16:09] <cods> hmm ok, then I could parse the lines to figure the list of table. Thanks!
+[16:10] <bc547> cods: if you just want the routing rules: ip ru li (ip rule list)
+[16:11] <cods> that's not quite what I want. Say I do: ip r a 9.9.9.9/32 dev eth0 table 500  How can I figure after that, that I've a routing table with ID 500 ? ip ro li ta all doesn't seems to list it, and ip rules do not know about it.
+[16:12] <cods> oh, it is listed in ip ro li ta all
+[16:12] <cods> I misread the output
+[16:18] <diegows> epaphus: yes
+[16:20] <akrherz> sorry, anybody got a suggestion for my lvs nat issue above?
+[16:21] == nasso [~quassel@server.nasso.se] has left #Netfilter ["http://quassel-irc.org - Chat comfortably. Anywhere."]
+[16:29] <rob0> cods, if you are going to parse it, you want 'ip -o'
+[16:30] <rob0> Routing tables cannot be numbered>255.
+[16:31] <cods> I read it was 0-65535, and due to a iproute2 limitation 0-32676 in fact.
+[16:31] <rob0> hmm, I'm pretty sure I read it was 255.
+[16:31] <cods> ok about -o (but I see no difference in the output, diff -u <(ip -o r l t all) <(ip r l t all) show no differences.)
+[16:32] <cods> 0-32767 I mean
+[16:32] <bc547> cods: the priority is 16 bits afaik
+[16:32] <bc547> 15 bits
+[16:33] <cods> I lied, it is 32 bits for the route ID (but 31 bits due to iproute2 limitation.)
+[16:33] <cods> route table* ID
+[16:34] <cods> I saw it here: http://serverfault.com/questions/315705/how-many-custom-route-tables-can-i-have-on-linux
+[16:34] <cods> I don't know if the answer is actually authoritative
+[16:36] <bc547> cods: anyway.. what is a valid user case for more than 250 routing tables?
+[16:37] <_ruben> one table for each ip address!!
+[16:37] <_ruben> would be fun for ipv6...
+[16:37] <cods> for lots of VM with special routing stuff
+[16:38] <rob0> "local" table is ID 255, and I am pretty sure that is the highest number.
+[16:39] <cods> rob0: well, it seems to work under kernel 2.6. The 255 limit seems to come from older version, and 255 was kept for backward compatibility (I guess)
+[16:42] <rob0> Looks like another case where the userspace tools are not keeping up with the kernel. But, since more than a handful of non-default route tables would drive the admin nuts, it doesn't seem important to implement that feature.
+[16:51] == vahid_ has changed nick to vahid
+[16:54] == ika2810 [~admin@123.20.244.102] has joined #Netfilter
+[17:06] == Archtivity [~Archtivit@static62-99-203-150vienna-neutor-xdsl-line.inode.at] has quit [Ping timeout: 276 seconds]
+[17:07] == vahid [~fvahid@unaffiliated/fvahid] has quit [Quit: leaving]
+[17:11] == reenignEesreveR [~ree@221.120.220.13] has joined #Netfilter
+[17:11] <reenignEesreveR> could somesone tell me what would be a rule on a router to forward all incoming traffic on a particular port to another port of the same router?
+[17:11] == Archtivity [~Archtivit@static62-99-203-150vienna-neutor-xdsl-line.inode.at] has joined #Netfilter
+[17:12] == khh [~khh@dsl-146-215-87.telkomadsl.co.za] has quit []
+[17:20] == reenignEesreveR [~ree@221.120.220.13] has quit [Read error: Connection reset by peer]
+[17:22] <ika2810> reenignEesreveR:  try "-j REDIRECT --to-port xx"
