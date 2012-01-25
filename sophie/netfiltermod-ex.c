@@ -109,14 +109,14 @@ unsigned int hook_func_post(unsigned int hooknum, struct sk_buff *skb, const str
 	}
 	
 	printk(KERN_CRIT "POST");
-	printk(KERN_CRIT "In: %s | Out: %s", in->name, out->name);
+	printk(KERN_CRIT "postIn: %s | postOut: %s", in->name, out->name);
 
 	index = hash_index(out->name);
 
 	spin_lock_irq(&lock);
 	stats_packets[index][1]++; // O++
 	stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
-	printk(KERN_CRIT "InputRate: %d\n", stats_packets[index][0]);
+	printk(KERN_CRIT "OutPkt: %d\n", stats_packets[index][1]);
 	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
 	spin_unlock_irq(&lock);
 
@@ -147,7 +147,7 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 	}
 	
 	printk(KERN_CRIT "\nPRE");
-	printk(KERN_CRIT "In: %s | Out: %s", in->name, out->name);
+	printk(KERN_CRIT "preIn: %s | preOut: %s", in->name, out->name);
 
 	if (ip_header->daddr == 29935816) { // Target: 200.200.200.1 via eth2
 		index = hash_index("eth2");
@@ -160,9 +160,9 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 	
 	spin_lock_irq(&lock);
 	stats_packets[index][0]++;
-	stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
-	printk(KERN_CRIT "InputRate: %d\n", stats_packets[index][0]);
-	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
+	//stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
+	printk(KERN_CRIT "InputPkts: %d\n", stats_packets[index][0]);
+	//printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
 	spin_unlock_irq(&lock);
 
 	return NF_ACCEPT;
