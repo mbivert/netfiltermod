@@ -22,6 +22,8 @@
 #include <linux/vmalloc.h>
 #include <net/ip.h>
 
+#include <net/route.h>
+
 #include <linux/spinlock.h>
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,16)
@@ -126,7 +128,10 @@ unsigned int hook_func_post(unsigned int hooknum, struct sk_buff *skb, const str
 /* Hook function: PRE */
 unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
 
+	int rc = 51;
 	int index = 42;
+	__be32 src, dst;
+	u8 tos;
 
 	// Ok, useless but ...
 	sock_buff = skb;
@@ -149,6 +154,13 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 	printk(KERN_CRIT "\nPRE");
 	printk(KERN_CRIT "preIn: %s | preOut: %s", in->name, out->name);
 
+	src = ip_header->saddr;
+	dst = ip_header->daddr;
+	tos = ip_header->tos;
+	rc = ip_route_input(skb, dst, src, tos, in);
+	printk(KERN_CRIT "Route: %d", rc);
+
+	printk(KERN_CRIT "@ dest: %d", ip_header->daddr);
 	if (ip_header->daddr == 29935816) { // Target: 200.200.200.1 via eth2
 		index = hash_index("eth2");
 	} else if (ip_header->daddr == 23356516) { // Target: 100.100.100.1 via eth1
