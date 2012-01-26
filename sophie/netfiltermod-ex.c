@@ -77,16 +77,6 @@ unsigned int hook_func_forward(unsigned int hooknum, struct sk_buff *skb, const 
 	tcp_header = (struct tcphdr *) skb_transport_header (sock_buff);
 	if (!tcp_header) { return NF_ACCEPT; }
 	
-/*
-	=> In PREROUTING now!
-
-	index = hash_index(out->name);
-	stats_packets[index][0]++;
-	stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
-	printk(KERN_CRIT "InputRate: %d\n", stats_packets[index][0]);
-	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
-*/
-	
 	return NF_ACCEPT;
 }
 
@@ -111,7 +101,7 @@ unsigned int hook_func_post(unsigned int hooknum, struct sk_buff *skb, const str
 	}
 	
 	printk(KERN_CRIT "POST");
-	printk(KERN_CRIT "postIn: %s | postOut: %s", in->name, out->name);
+	printk(KERN_CRIT "PostIn: %s | PostOut: %s", in->name, out->name);
 
 	index = hash_index(out->name);
 
@@ -152,19 +142,19 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 	}
 	
 	printk(KERN_CRIT "\nPRE");
-	printk(KERN_CRIT "preIn: %s | preOut: %s", in->name, out->name);
+	printk(KERN_CRIT "PreIn: %s | PreOut: %s", in->name, out->name);
 
+	// Tests routage propre
 	src = ip_header->saddr;
 	dst = ip_header->daddr;
 	tos = ip_header->tos;
 	rc = ip_route_input(skb, dst, src, tos, in);
 	printk(KERN_CRIT "Route: %d", rc);
 
-	printk(KERN_CRIT "@ dest: %d", ip_header->daddr);
 	if (ip_header->daddr == 29935816) { // Target: 200.200.200.1 via eth2
-		index = hash_index("eth1");
+		index = hash_index("eth2");
 	} else if (ip_header->daddr == 23356516) { // Target: 100.100.100.1 via eth1
-		index = hash_index("eth0");
+		index = hash_index("eth1");
 	}
 	if (index == 42) {
 		return NF_ACCEPT;
