@@ -1,0 +1,8 @@
+Créer un nouveau .vdi avec la taille voulue.
+En console, faire 
+VBoxManage clonehd ancien.vdi --existing nouveau.vdi
+
+dans ~/kernel_source/linux-2.6.32
+
+sudo fakeroot debian/rules clean
+sudo AUTOBUILD=1 fakeroot debian/rules binary-debs

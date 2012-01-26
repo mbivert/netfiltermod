@@ -1,0 +1,94 @@
+3:10		*** Afnarel joined #kernelnewbies
+		New here? Go read http://www.catb.org/~esr/faqs/smart-questions.html first, and then 
+http://kernelnewbies.org/FAQ - come back if you still have questions.
+		Topic set by ChanServ!services@services.oftc.net on Sun Nov 27 2011 13:42:09 GMT+0100 (CET)
+13:10	ChanServ	[#kernelnewbies] welcome to the kernelnewbies channel. please try "/msg lxrbot rules" if you 
+are new here
+13:10	mibbit	lxrbot: No such nickname online.
+13:11		*** DLange quit (Quit: a reboot a day keeps the doctor away)
+13:11	Afnarel	Hi
+13:11	Afnarel	I'm new to kernel programming
+13:11	Tectu	Afnarel, please just ask
+13:12	Afnarel	I'm trying to get the packets going from one interface to another in a queue
+13:13	Afnarel	I tried using netfilter hooks but it doesn't work: the queue size is always equal to 0
+13:13		*** DLange joined #kernelnewbies
+13:14	Afnarel	I've read this: http://gicl.cs.drexel.edu/people/sevy/network/Linux_network_stack_walkthrough.html
+13:15	Afnarel	In "Core (layer 2) output routines:" I can read "if device has a queue (qdisc) ..."
+13:16	Afnarel	I think I should use the dev_queue_xmit() function but I don't understand how
+13:16	Tectu	Afnarel, it says Linux Network Stack Walkthrough (2.4.20) maybe a little bit too old?
+13:17	Afnarel	Does it change a lot ?
+13:17	Afnarel	I will try to find a newer version then
+13:18	Tectu	yeah, i am pretty sure that there may be a few big changes, but i am not sure. i am new to all this 
+stuff to.
+13:19		*** eriko joined #kernelnewbies
+13:24	Afnarel	I found a newer one for 2.6.37 here
+13:24	Afnarel	http://beyond-syntax.com/blog/2011/03/diving-into-linux-networking-i/
+13:25	Afnarel	It says "The standard Linux kernel can't keep that pace for an extended period of time it relies on 
+buffering to handle short bursts of traffic beyond what it can handle."
+13:25	Afnarel	This is the buffer I want to get
+13:25		*** cmaiolin1 quit (Remote host closed the connection)
+13:25		*** cmaiolino joined #kernelnewbies
+13:26		*** edwin quit (Remote host closed the connection)
+13:27		*** edwin joined #kernelnewbies
+13:32		*** xiangfu quit (Quit: Leaving)
+13:44	bc547_	Afnarel: netfilter has nothing to do with output queueing
+13:45	bc547_	Afnarel: look at qdisc's if you want to implement queueing
+13:47		*** kzak quit (Quit: Leaving)
+13:52	Afnarel	Ok thanks I'll search in this direction
+13:53	bc547_	Afnarel: why do you want to queue them?
+13:53	Afnarel	I want to get statistics
+13:54	bc547_	like?
+13:54		*** albanc joined #kernelnewbies
+13:54	Afnarel	I want to know the number of TCP packets in qdisc
+13:54		*** eriko quit (Quit: eriko)
+13:55		*** kzak joined #kernelnewbies
+13:56	bc547_	Afnarel: tc already can show queue stats
+13:58	Afnarel	Yes but that's just the first step
+14:05	Afnarel	I'm working on a "congestion control protocol with explicit rate notification from forwarding 
+devices".
+14:07		*** baedert joined #kernelnewbies
+14:22	ron	"take 2 sudafed and a warm bath"
+14:32		*** Lori joined #kernelnewbies
+14:32		*** Humvee is now known as humvee
+14:33		*** kay quit (Quit: kay)
+14:35		*** bartman quit (Ping timeout: 480 seconds)
+14:37		*** kay joined #kernelnewbies
+14:39		*** bartman joined #kernelnewbies
+14:48		*** Kebianzao|work quit (Remote host closed the connection)
+14:50		*** jays quit (Quit: Leaving)
+14:53		*** gbeshers quit (Remote host closed the connection)
+15:04		*** hyperair quit (Remote host closed the connection)
+15:10		*** hyperair joined #kernelnewbies
+15:13		*** rsalveti` joined #kernelnewbies
+15:13		*** riel is now known as surriel
+15:19		*** rsalveti quit (Ping timeout: 480 seconds)
+15:19		*** nicesj quit (Ping timeout: 480 seconds)
+15:22		*** Lori quit (Quit: Leaving.)
+15:22		*** reynaldo joined #kernelnewbies
+15:22		*** phimuemue joined #kernelnewbies
+15:24		*** cojocar joined #kernelnewbies
+15:25		*** __iron joined #kernelnewbies
+15:26		*** beraldo joined #kernelnewbies
+15:31		*** bhat quit (Quit: Leaving)
+15:33		*** v0n joined #kernelnewbies
+15:34		*** jgarvey joined #kernelnewbies
+15:36		*** cfreak201 joined #kernelnewbies
+15:38		*** cfreak200 quit (Ping timeout: 480 seconds)
+15:39	vmesoff	Afnarel: why get forwarders involved? Just monitor the rtt variation: 
+http://www.cs.washington.edu/research/networking/pcp/
+15:44		*** utroz joined #kernelnewbies
+15:53	Afnarel	vmesoff: we are not responsible for the protocol implementation
+15:53		*** vmesoff is now known as vmeson
+15:53	Afnarel	A research group from the french INRIA is developping it
+15:54	vmeson	interesting - is it intended to be general purpose protocol?
+15:54	Afnarel	or CNRS actually not INRIA
+15:57	vmeson	oatao.univ-toulouse.fr/4480/1/Lochin_4480.pdf ? [PDF]
+15:57	vmeson	Towards an incremental deployment of ERN protocols: a proposal
+15:58		*** nicesj joined #kernelnewbies
+15:59	vmeson	Afnarel - is that the paper/group involved? Got a relevant link?
+16:00	Afnarel	Yes
+16:11		*** unriel joined #kernelnewbies
+16:11		*** unriel is now known as riel
+16:12		*** MrMonkey joined #kernelnewbies
+16:12		*** gaspa1 left #kernelnewbies
+16:21		*** bhat joined #kernelnewbies

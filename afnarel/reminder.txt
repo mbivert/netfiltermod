@@ -1,3 +1,41 @@
+Routing packets :
+
+fib_lookup() (appelé par ip_route_input())
+
+http://lartc.org/howto/
+
+http://opalsoft.net/qos/DS-21.htm
+
+Intermediate Queuing Discipline
+Classful Queuing Disciplines (Class Based Queuing CBQ)
+
+FIFO Queuing != Non FIFO Queuing
+
+    Queuing disciplines
+    	Queuing disciplines are algorithms which control how packets enqueued are treated. A very simple queuing discipline could be a FIFO (First In-First Out) queue of 16 packets.
+
+    Classes
+    	In Linux this concept is handled by classes. That is, a queuing discipline might contain classes. Each class can be viewed as a socket to which you can plug in any other queuing discipline. When a qdisc with classes is created, it will typically assign simple FIFO queues to the classes it contains. But these can be replaced with other qdiscs by the tc program.
+    Filters
+    Policers
+
+Résumé :
+	Une qdisc contient d'autres qdisc appelées "classes"
+
+	On peut utiliser différents types de qdisc (algotrithmes), par exemple
+	une qdisc basée sur la priorité en fonction de l'adresse source. On met
+	5 qdiscs dans la qdisc principale, on affecte des priorités 1 à 5 aux
+	paquets et on les répartis dans les classes. Quand on doit défiler un
+	paquet, on le défile de la classe non vide de numéro le plus faible.
+
+	Mais les classes ne stockent pas les paquets elles-mêmes, elles utilisent des qdiscs
+	qui peuvent elle-mêmes avoir des classes qui peuvent avoir des qdiscs, etc.
+
+	
+
+
+===============================
+
 netfilter = firewall au niveau du noyau. On peut le contrôler avec iptables
 mais on peut aussi créer des hooks.
 
