@@ -6,7 +6,16 @@ http://lartc.org/howto/
 
 http://opalsoft.net/qos/DS-21.htm
 
-Intermediate Queuing Discipline
+classless qdiscs != classful qdiscs
+
+Intermediate Queuing Discipline (IMQ) :
+	qdiscs are attached to network devices
+	Sous Linux : packet -> qdisc -> device
+	 => only egress shaping possible
+	 => a qdisc can only see traffic of one interface, 
+	 	global limitations can't be placed.
+	 IMQ is there to help solve those two limitations. In short, you can put everything you choose in a qdisc. Specially marked packets get intercepted in netfilter NF_IP_PRE_ROUTING and NF_IP_POST_ROUTING hooks and pass through the qdisc attached to an imq device. An iptables target is used for marking the packets.
+
 Classful Queuing Disciplines (Class Based Queuing CBQ)
 
 FIFO Queuing != Non FIFO Queuing
@@ -32,7 +41,44 @@ Résumé :
 	qui peuvent elle-mêmes avoir des classes qui peuvent avoir des qdiscs, etc.
 
 	
+Sigles :
+	Class Based Queue (CBQ)
+	Token Bucket Flow (TBF) / Token Bucket Filter
+	Clark-Shenker-Zhang (CSZ)
+	First In First Out (FIFO)
+	Priority Traffic Equalizer (TEQL)
+	Stochastic Fair Queuing (SFQ) / Stochastic Fairness Queueing
+	Asynchronous Transfer Mode (ATM)
+	Random Early Detection (RED)
+	Generalized RED (GRED)
+	Diff-Serv Marker (DS_MARK)
 
+
+Token Bucket Filter :
+	The Token Bucket Filter (TBF) is a simple qdisc that only passes packets arriving at a rate which is not exceeding some administratively set rate, but with the possibility to allow short bursts in excess of this rate.
+	TBF is very precise, network- and processor friendly. It should be your first choice if you simply want to slow an interface down!
+	http://lartc.org/lartc.html#AEN691 (9.2.2)
+
+===============================
+
+# tc qdisc add dev eth1 root handle 1: tbf rate 256kbit buffer 1600
+limit 3000
+# tc qdisc add dev eth1 parent 1: handle 10: netem delay 150ms
+
+
+
+If you have a networking device with a large queue, like a DSL modem or a cable modem, and you talk to it over a fast device, like over an ethernet interface, you will find that uploading absolutely destroys interactivity.
+
+This is because uploading will fill the queue in the modem, which is probably *huge* because this helps actually achieving good data throughput uploading. But this is not what you want, you want to have the queue not too big so interactivity remains and you can still do other stuff while sending data.
+
+The line above slows down sending to a rate that does not lead to a queue in the modem - the queue will be in Linux, where we can control it to a limited size.
+
+Change 220kbit to your uplink's *actual* speed, minus a few percent. If you have a really fast modem, raise 'burst' a bit. 
+
+
+TCNG : 
+http://tldp.org/HOWTO/Traffic-Control-tcng-HTB-HOWTO/intro.html#intro-tc
+http://linux-ip.net/gl/tcng/
 
 ===============================
 
