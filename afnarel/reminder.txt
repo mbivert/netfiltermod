@@ -1,3 +1,15 @@
+*** Diffserv ***
+
+ingress iface (before forwarding) :
+	packet classification
+	traffic conditionning
+ingress iface (after route lookups) :
+	queueing discipline
+	(Eventually classification & traffic conditionning)
+
+	
+
+====================================
 Routing packets :
 
 fib_lookup() (appelé par ip_route_input())
@@ -26,7 +38,13 @@ FIFO Queuing != Non FIFO Queuing
 
     Classes
     	In Linux this concept is handled by classes. That is, a queuing discipline might contain classes. Each class can be viewed as a socket to which you can plug in any other queuing discipline. When a qdisc with classes is created, it will typically assign simple FIFO queues to the classes it contains. But these can be replaced with other qdiscs by the tc program.
+
+    Classifier
+    	Each classful qdisc needs to determine to which class it needs to send a packet. This is done using the classifier.
+
     Filters
+    	Classification can be performed using filters. A filter contains a number of conditions which if matched, make the filter match.
+
     Policers
 
 Résumé :
@@ -54,6 +72,11 @@ Sigles :
 	Generalized RED (GRED)
 	Diff-Serv Marker (DS_MARK)
 
+	Per-Hop Behavior (PHB)
+	Expedited Forwarding (EF) PHB
+	Assured Forwarding (AF) PHB group
+
+	DS = Differentiated Services
 
 Token Bucket Filter :
 	The Token Bucket Filter (TBF) is a simple qdisc that only passes packets arriving at a rate which is not exceeding some administratively set rate, but with the possibility to allow short bursts in excess of this rate.
@@ -91,6 +114,8 @@ mais on peut aussi créer des hooks.
 auto-negotiation: choose between half-duplex and full-duplex (most optimal) if the card supports it.
 
 http://ftp.gnumonks.org/pub/doc/packet-journey-2.4.html <==== COOL !!!
+
+http://www.cs.fsu.edu/~baker/devices/lxr/http/source/linux/net/ipv6/netfilter/ip6_queue.c?v=2.6.25
 
 ip_rcv_finish() : netfilter hook in which the packet's final destination is determined by
 calling the routing function net/ipv4/route.c:ip_route_input().
