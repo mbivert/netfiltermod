@@ -3,6 +3,7 @@ Routing packets :
 fib_lookup() (appelé par ip_route_input())
 
 http://lartc.org/howto/
+http://lartc.org/lartc.html
 
 http://opalsoft.net/qos/DS-21.htm
 
