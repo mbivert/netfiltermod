@@ -3,7 +3,7 @@
 ingress iface (before forwarding) :
 	packet classification
 	traffic conditionning
-ingress iface (after route lookups) :
+egress iface (after route lookups) :
 	queueing discipline
 	(Eventually classification & traffic conditionning)
 
