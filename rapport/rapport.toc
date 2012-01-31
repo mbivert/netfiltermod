@@ -1,0 +1,18 @@
+\select@language {french}
+\contentsline {section}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {2}Description du probl\IeC {\`e}me}{2}
+\contentsline {subsection}{\numberline {2.1}\IeC {\'E}laboration de statistiques sur les paquets TCP}{2}
+\contentsline {subsection}{\numberline {2.2}Netfilter}{2}
+\contentsline {section}{\numberline {3}Solutions}{3}
+\contentsline {subsection}{\numberline {3.1}Environnement de tests}{3}
+\contentsline {subsection}{\numberline {3.2}Test de connectivit\IeC {\'e}}{4}
+\contentsline {subsection}{\numberline {3.3}D\IeC {\'e}termination de la taille de la pile avec Netfilter}{5}
+\contentsline {subsubsection}{\numberline {3.3.1}\textit {NF\_IP\_FORWARD} et \textit {NF\_IP\_POST\_ROUTING}}{5}
+\contentsline {subsubsection}{\numberline {3.3.2}\textit {NF\_IP\_PRE\_ROUTING} et \textit {NF\_IP\_POST\_ROUTING}}{6}
+\contentsline {subsection}{\numberline {3.4}Lecture des donn\IeC {\'e}es sur les cartes r\IeC {\'e}seaux}{6}
+\contentsline {section}{\numberline {4}Bibliographie}{6}
+\contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{7}
+\contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{7}
+\contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{7}
+\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{7}
+\contentsline {subsection}{\numberline {A.4}Compilation d'un noyau Linux}{7}
