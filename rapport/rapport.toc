@@ -10,9 +10,12 @@
 \contentsline {subsubsection}{\numberline {3.3.1}\textit {NF\_IP\_FORWARD} et \textit {NF\_IP\_POST\_ROUTING}}{5}
 \contentsline {subsubsection}{\numberline {3.3.2}\textit {NF\_IP\_PRE\_ROUTING} et \textit {NF\_IP\_POST\_ROUTING}}{6}
 \contentsline {subsection}{\numberline {3.4}Lecture des donn\IeC {\'e}es sur les cartes r\IeC {\'e}seaux}{6}
-\contentsline {section}{\numberline {4}Bibliographie}{6}
-\contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{7}
-\contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{7}
-\contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{7}
-\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{7}
-\contentsline {subsection}{\numberline {A.4}Compilation d'un noyau Linux}{7}
+\contentsline {subsubsection}{\numberline {3.4.1}Statistiques de la carte}{6}
+\contentsline {subsubsection}{\numberline {3.4.2}npkt++}{6}
+\contentsline {subsubsection}{\numberline {3.4.3}Wrapper pour les drivers ethernet (npkt--)}{6}
+\contentsline {section}{\numberline {4}Bibliographie}{7}
+\contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{8}
+\contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{8}
+\contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{8}
+\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{8}
+\contentsline {subsection}{\numberline {A.4}Compilation d'un noyau Linux}{8}

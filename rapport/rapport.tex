@@ -336,6 +336,59 @@ a de fortes chances d'impacter la vitesse d'exécution du code
 la taille de la pile tout en restant en mode noyau.
 
 \subsection{Lecture des données sur les cartes réseaux}
+\subsubsection{Statistiques de la carte}
+Grâce à une fonction du noyau, il est possible d’accéder à des
+statistiques concernant les interfaces. La fonction \textit{dev\_get\_stats}
+définie dans \textit{linux/netdevice.h} fournit :
+\begin{itemize}
+	\item le nombre de paquets (ou octets) reçus sur une interface;
+	\item le nombre de paquets (ou octets) transmis par une interface;
+	\item le nombre d’erreurs;- et le nombre de paquets “dropped”.
+\end{itemize}
+
+Ces statistiques pourraient nous aider à calculer Qsize. Cependant,
+elles ne permettent pas de différencier les paquets TCP des autres paquets.
+Il nous faut donc aller un peu plus loin dans le code.
+
+\subsubsection{npkt++}
+
+\subsubsection{Wrapper pour les drivers ethernet (npkt--)}
+Les fonctions permettant de manipuler une carte ethernet sont sous
+linux abstraite par une structure : ajouter un driver revient donc
+à déclarer une structure et à remplir les différents champs, avec
+les fonctions adaptées à la carte.
+La structure \textit{net\_device\_ops}, déclarée dans
+\textit{linux/netdevice.h} joue ce rôle:
+\begin{verbatim}
+struct net_device_ops {
+    int (*ndo_init)(struct net_device *dev);
+    void (*ndo_uninit)(struct net_device *dev);
+    int (*ndo_open)(struct net_device *dev);
+    int (*ndo_stop)(struct net_device *dev);
+    netdev_tx_t (*ndo_start_xmit) (struct sk_buff *skb, struct net_device *dev);
+    ...
+};
+\end{verbatim}
+
+Et un driver, par exemple e1000, l'utilise ainsi:
+\begin{verbatim}
+static const struct net_device_ops e1000_netdev_ops = {
+    .ndo_open               = e1000_open,
+    .ndo_stop               = e1000_close,
+    .ndo_start_xmit         = e1000_xmit_frame,
+    .ndo_get_stats          = e1000_get_stats,
+    ...
+};
+\end{verbatim}
+
+La fonction \textit{dev\_hard\_start\_xmit}, située dans
+\textit{net/core/dev.c}, est chargée de transmettre le paquet
+à la carte. Après quelques tests à l'aide de \textit{printk} bien
+placé, nous avons constaté que dans tous les cas, la fonction
+est appellée, plus ou moins directement, et qu'elle contient 
+un appel à \textit{ndo\_start\_xmit}. La décrementation de la
+taille de la pile peut donc être effectuée ici, plutôt que de
+l'être dans le noyau.
 
 \section{Bibliographie}
 
