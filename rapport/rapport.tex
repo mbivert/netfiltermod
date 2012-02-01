@@ -41,7 +41,7 @@ sur les paquets TCP qui traversent le routeur. Puis dans un
 second temps, nous nous attarderons sur le protocole (ou pas).
 
 \section{Description du problème}
-\subsection{Élaboration de statistiques sur les paquets TCP}
+\subsection{Contexte}
 Un routeur est une machine qui assure l’acheminement des données,
 d'un réseau informatique à un autre. Son rôle consiste à diriger
 les paquets d'une interface réseau vers une autre par le chemin
@@ -335,8 +335,7 @@ a de fortes chances d'impacter la vitesse d'exécution du code
 (pourquoi?); on va donc chercher une autre façon d'obtenir
 la taille de la pile tout en restant en mode noyau.
 
-\subsection{Lecture des données sur les cartes réseaux}
-\subsubsection{Statistiques de la carte}
+\subsection{Lecture des statistiques sur les cartes réseaux}
 Grâce à une fonction du noyau, il est possible d’accéder à des
 statistiques concernant les interfaces. La fonction \textit{dev\_get\_stats}
 définie dans \textit{linux/netdevice.h} fournit :
@@ -350,6 +349,7 @@ Ces statistiques pourraient nous aider à calculer Qsize. Cependant,
 elles ne permettent pas de différencier les paquets TCP des autres paquets.
 Il nous faut donc aller un peu plus loin dans le code.
 
+\section{Localisation des files d'attente dans la couche liaison}
 \subsubsection{npkt++}
 
 \subsubsection{Wrapper pour les drivers ethernet (npkt--)}
