@@ -29,7 +29,7 @@ l'augmentation du traffic, et la distribution non-équitable
 des ressources entre les usagers, peuvent conduire à un
 ralentissement des communications.
 Une famille de protocoles de contrôle de congestion est l'IP-ERN
-(Explicit Rate Notification). Ils reposent sur les informations
+(Explicit Rate Notification) \cite{thesis1}. Ils reposent sur les informations
 envoyées/calculées par des routeurs, comme le taux d'émission
 optimal. Dans le cadre de notre projet, nous devons élaborer un
 module noyau à destination d'un routeur supportant l'IP-ERN.
@@ -113,7 +113,7 @@ par le hook \textit{NF\_IP\_LOCAL\_OUT}.
 Netfilter va nous permettre, grâce aux hooks, d'ajouter des fonctionnalités au routeur 
 sans toucher directement au code du noyau Linux. Afin d'utiliser Netfilter, il faut 
 programmer un module en mode noyau. Les modules sont des morceaux de code écrits en 
-langage C, pouvant être ajoutés ou retirés du noyau dynamiquement. Ils apportent de 
+langage C, pouvant être ajoutés ou retirés du noyau dynamiquement \cite{module1}. Ils apportent de 
 nouvelles fonctionnalités au noyau. Dans notre cas, le module fournira des fonctions 
 dites de callback qui seront automatiquement appelées lorsqu'un paquet traversera le 
 hook associé à la fonction. Ces fonctions serviront à calculer les statistiques que 
@@ -124,8 +124,9 @@ plus restreintes et le débogage plus ardu, car le moindre accès mémoire inval
 rendre le système inutilisable. Les détails techniques concernant ce type de programmation 
 sont évoqués en annexe [numéro de l'annexe].
 
-\section{Solutions}
-\subsection{Environnement de tests}
+\section{Environnement de tests}
+
+\subsection{Architecture}
 
 Comme nous l'avons dit ci-dessus, la programmation en mode noyau peut avoir un grave 
 impact sur le fonctionnement de l'ordinateur en cas de bug. De ce fait, nous avons 
@@ -231,10 +232,10 @@ L'option \textit{-i} d'\textit{iperf} peut-être utilisée
 pour fixer l'intervalle de temps entre les rapports
 d'envois de paquets (mesure bande passante, $\ldots$).
 
-\subsection{Détermination de la taille de la pile avec Netfilter}
+\section{Calcul de la taille de la file d'attente avec Netfilter}
 A présent, nous écrivons un module utilisant Netfilter. Les
 fonctions de callback données par les hooks permettent
-d'accéder à un \textit{struct sk\_buff}. Cette structure représente
+d'accéder à un \textit{struct sk\_buff} \cite{skbuff}. Cette structure représente
 un paquet dans le noyau Linux. Il est ainsi possible de récupérer
 les informations du datagramme telles que le protocole ou encore
 l'adresse IP de destination.
@@ -262,9 +263,9 @@ Rate par l'Output Traffic Rate.
 Les deux hooks pouvant accéder aux mêmes données en même temps,
 il est indispensable de mettre en place un mécanisme de
 synchronisation. Les hooks étant déclenchés par des interruptions,
-il est impossible d'utiliser des mutex ou encore des sémaphores.
+il est impossible d'utiliser des mutex ou encore des sémaphores \cite{mutex}.
 Le noyau fournit des spinlocks, jouant le même rôle, mais dans
-un contexte d'interruptions.
+un contexte d'interruptions. \cite{lock}
 
 Les hooks concernant les paquets qui traversent le routeur sont :
 \textit{NF\_IP\_PRE\_ROUTING}, \textit{NF\_IP\_FORWARD} et
@@ -275,7 +276,7 @@ structure \textit{net\_device}. Par conséquent, nous allons
 tout d'abords chercher la taille de la pile entre
 \textit{NF\_IP\_FORWARD} et \textit{NF\_IP\_POST\_ROUTING}.
 
-\subsubsection{\textit{NF\_IP\_FORWARD} et \textit{NF\_IP\_POST\_ROUTING}}
+\subsection{\textit{NF\_IP\_FORWARD} et \textit{NF\_IP\_POST\_ROUTING}}
 Pour commencer, les vitesses maximales des interfaces eth$1$ et
 eth$2$ sont configurées de la même façon. Ainsi, on s'attend à
 ce que la sortie des paquets soit fluide : nous ne nous attendons
@@ -299,7 +300,7 @@ fonction de callback du hook \textit{NF\_IP\_POST\_ROUTING}.
 
 À présent, on configure la bande passante maximale de l'interface
 eth$2$ afin que la vitesse maximale soit de $10$ Mbits/seconde.
-Pour cela, on utilise la commande \textit{tc} (traffic control).
+Pour cela, on utilise la commande \textit{tc} (traffic control) \cite{tc1} \cite{tcman}.
 Cette commande va agir sur le fonctionnement des files d’attente
 en sortie d’une interface donnée.
 \begin{verbatim}
@@ -317,24 +318,18 @@ de la file d’attente est toujours nulle, ce qui prouve que la
 file d’attente interne ne se trouve pas entre les hooks
 \textit{NF\_IP\_FORWARD} et \textit{NF\_IP\_POST\_ROUTING}.
 
-Il nous faut donc regarder entre deux autres hooks.
+Il nous faut donc regarder entre deux autres 
+hooks : \textit{NF\_IP\_PRE\_ROUTING} et \textit{NF\_IP\_POST\_ROUTING}.
 
-\subsubsection{\textit{NF\_IP\_PRE\_ROUTING} et \textit{NF\_IP\_POST\_ROUTING}}
-L'interface de sortie n'étant plus disponible en PRE ROUTING,
-il va nous falloir effectuer le routage à la main. Notre
+\subsection{\textit{NF\_IP\_PRE\_ROUTING} et \textit{NF\_IP\_POST\_ROUTING}}
+L'interface de sortie n'étant pas disponible dans le hook \textit{NF\_IP\_PRE\_ROUTING},
+il va nous falloir effectuer le routage à la main pour déterminer à quelle interface de sortie le paquet est destiné. Notre
 objectif étant de chercher où se trouve la file, nous nous
-contentons d'un routage manuelle, avec les valeurs entrées en
-dur dans le code.
+contentons d'un routage manuel, avec des adresse IP fixes dans le code.
 
-Nous obtenons finalement le même résultats qu'entre FORWARD et POST,
-il semble donc qu'il soit impossible d'utiliser Netfilter pour
-obtenir les statistiques. On pourrait cependant empiler les paquets
-sur lesquelles on désire avoir des statistiques, et passer le
-buffer en userspace pour y faire les calculs. Il est néamoins
-important pour le code d'être efficace, et sortir du mode noyau
-a de fortes chances d'impacter la vitesse d'exécution du code
-(pourquoi?); on va donc chercher une autre façon d'obtenir
-la taille de la pile tout en restant en mode noyau.
+Nous obtenons finalement le même résultats que précédemment. 
+Il semble donc qu'il soit impossible d'utiliser Netfilter pour
+obtenir les statistiques. 
 
 \subsection{Lecture des statistiques sur les cartes réseaux}
 Grâce à une fonction du noyau, il est possible d’accéder à des
@@ -343,20 +338,89 @@ définie dans \textit{linux/netdevice.h} fournit :
 \begin{itemize}
 	\item le nombre de paquets (ou octets) reçus sur une interface;
 	\item le nombre de paquets (ou octets) transmis par une interface;
-	\item le nombre d’erreurs;- et le nombre de paquets “dropped”.
+	\item le nombre d’erreurs;
+	\item et le nombre de paquets “dropped”.
 \end{itemize}
 
 Ces statistiques pourraient nous aider à calculer Qsize. Cependant,
 elles ne permettent pas de différencier les paquets TCP des autres paquets.
 Il nous faut donc aller un peu plus loin dans le code.
 
-\subsection{Localisation des files d'attente dans la couche liaison}
-\subsubsection{npkt++}
-A la réception des paquets, ces derniers sont stockés dans une file d’attente appelée backlog ou ingress queue, dans la couche Liaison. Il en existe une par processeur : cette file d’attente est donc liée à la vitesse de traitement des paquets. Une telle file ne nous intéresse pas car nous nous intéressons uniquement aux files d’attente liées aux vitesses d’émission.
+\section{Localisation des files d'attente dans la couche liaison}
+
+Après tous les tests que nous avons effectué précédemment, nous pouvons affirmer
+ que la file d'attente contenant les paquets qui n'ont pas encore été traités ne
+  se situe pas au niveau du routeur, c'est-à-dire dans la couche Réseau du modèle 
+  OSI. Par conséquent, nous allons tenter de la localiser dans la couche
+   inférieure du modèle OSI : la couche Liaison. Voici le schéma représentant
+    les différentes phases du traitement d'un paquet :
+
+Schéma !
+
+\subsection{Les files d'attente avant le routage}
+Comme on peut le voir sur ce schéma issu de nos recherches, à la reception des paquets, ces derniers sont stockés dans une file d'attente appelée backlog ou ingress queue, dans la couche Liaison. Il en existe une par processeur.
+Lorsqu'un paquet entre, une interruption appelée \textit{NET\_RX\_SOFTIRQ} est levée. On peut choisir de traiter cette interruption grâce à un handler qui est une fonction appelée automatiquement lorsque l'interruption est levée. Nous avons donc essayer d'incrémenter le nombre de paquets dans ce handler et de continuer à le décrémenter  dans le hook \textit{NF\_IP\_POST\_ROUTING}. Malheureusement, le traitement des interruptions en mode noyau est avéré être plus compliqué que ce que nous pensions. Et nous n'avons pas voulu perdre de temps sur ce point puisque, par ailleurs, les recherches que nous avons fait nous ont appris que ces files d'attente sont liées à la vitesse de traitement des paquets. De telles files ne nous intéressent donc pas car nous nous intéressons uniquement aux files d'attente liées aux vitesses d'émission des paquets. 
+
+\subsection{Les files d'attente après le routage}
+
+\subsubsection{File d'attente entre les fonctions dev\_queue\_xmit et hard\_start\_xmit}
 
 Après le passage dans les hooks Netfilter, le paquet traverse la couche Liaison. A ce niveau, il y a une mise en file d’émission pour chaque interface de sortie. Cette file d’émission existe entre la fonction noyau \textit{dev\_queue\_xmit} et la fonction \textit{hard\_start\_xmit}. La première fonction empile le paquet lorsqu’il passe de la couche Réseau à la couche Liaison. La deuxième fonction a pour but d’indiquer au noyau que les paquets ont été transmis à la carte réseau. Nous pouvons donc incrémenter le nombre de paquets au niveau de la fonction \textit{dev\_queue\_xmit}, qui prend en compte l’interface de sortie.
 
 Il n’est pas possible d’écrire un code modulaire pour ce type de manipulation. Nous sommes contraints de modifier le code du noyau. Cela implique la compilation d’un nouveau noyau, tâche assez lourde. 
+
+\subsubsection{La compilation du noyau Linux}
+
+Pour pouvoir compiler un noyau Linux, il nous a fallu télécharger son code source. 
+Tout d'abord, nous avons télécharger sur le web une des versions les plus récentes. 
+Mais, avec cette version, nous n'avions pas le bon fichier de configuration. De ce fait, 
+la compilation du noyau prenait énormément d'espace sur le disque dur de la machine virtuelle 
+et cela a rendu inutilisable un certain nombre de machines virtuelles malgré nos tentatives 
+de leur allouer d'avantage d'espace disque. Cette étape nous a fait perdre beaucoup de temps.
+Finalement, nous avons téléchargé un autre noyau moins récent grâce à la commande :
+\begin{verbatim}
+apt_get install linux-source-2.6.32
+\end{verbatim}
+Nous avons choisi la version 2.6.32 car c'est celle que nous avions sur nos machines, 
+cela nous a permis de récupérer le fichier de configuration et la compilation prend beaucoup moins de place.
+Après avoir télécharger le noyau, il y a plusieurs étapes pour le compiler. 
+Le téléchargement nous procure un fichier compressé, il faut donc le décompresser :
+\begin{verbatim}
+tar xvjf linux-2.6.32.tar.bz2
+\end{verbatim}
+Une fois la décompression effectuée, il faut placer le fichier de configuration trouvé dans /boot dans le dossier contenant le noyau et le renommer en .config.
+Ensuite, il faut créer l'image binaire du noyau qui servira pour booter sur notre nouveau noyau :
+\begin{verbatim}
+make bzImage
+\end{verbatim}
+Les modules, qui comprennent notamment les pilotes utiles pour l'utilisation du clavier et de la souris par exemple, peuvent être compilés et installés :
+\begin{verbatim}
+make modules
+make modules_install
+\end{verbatim}
+Enfin, on peut compiler et installer le noyau lui-même :
+\begin{verbatim}
+make
+make install
+\end{verbatim}
+Pour pouvoir booter sur ce noyau ainsi installé, il faut taper la commande :
+\begin{verbatim}
+update-grub
+\end{verbatim}
+et redémarrer l'ordinateur.
+
+A chaque modification d'un des fichiers sources du noyau, il faut refaire le make et le make install.
+
+\subsubsection{Un premier essai dans dev\_queue\_xmit}
+En sortie, il existe une politique de gestion de files d'attente appelée qdisc. Il s'agit d'une structure 
+comportant deux pointeurs sur fonction enqueue et dequeue. Il existe une qdisc par interface de sortie.
+Nous avons donc cherché à connaître le contenu effectif en paquets TCP de la file d'attente.
+Il est clair que l'incrément du nombre de paquets TCP doit se faire au début du corps de la fonction \textit{dev\_queue\_xmit}
+quand un appel à la fonction pointée par enqueue est fait. En revanche, nous avons vu que la fonction 
+\textit{hard\_start\_xmit} est implémentée au niveau des drivers. Cela implique que l'implémentation de la fonction 
+diffère selon la carte réseau. Pour pallier ce problème, nous voulons décrémenter le nombre de paquets à un 
+niveau supérieur : par exemple au niveau de l'appel à la fonction pointée par dequeue.
+Malheureusement cela ne convient pas car ... COMPLETER !
 
 \subsubsection{Wrapper pour les drivers ethernet (npkt--)}
 Les fonctions permettant de manipuler une carte ethernet sont sous
@@ -392,7 +456,7 @@ La fonction \textit{dev\_hard\_start\_xmit}, située dans
 à la carte. Après quelques tests à l'aide de \textit{printk} bien
 placé, nous avons constaté que dans tous les cas, la fonction
 est appellée, plus ou moins directement, et qu'elle contient 
-un appel à \textit{ndo\_start\_xmit}. La décrementation de la
+un appel à \textit{ndo\_start\_xmit} qui lancera la transmission réelle des paquets. La décrementation de la
 taille de la pile peut donc être effectuée ici, plutôt que de
 l'être dans le noyau.
 
@@ -401,6 +465,14 @@ l'être dans le noyau.
 \newpage
 \bibliographystyle{ieeetr}
 \bibliography{docs}
+
+\textbf{Autre documentation consultée:}
+\begin{itemize}
+	\item Commande mii-tool (configuration vitesse) : 
+	http://www.cyberciti.biz/faq/linux-change-the-speed-and-duplex-settings-of-an-ethernet-card/
+	\item Source du noyau : http://lxr.linux.no/
+\end{itemize}
+
 
 \newpage
 \appendix
