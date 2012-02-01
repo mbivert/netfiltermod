@@ -10,10 +10,10 @@
 \contentsline {subsubsection}{\numberline {3.3.1}\textit {NF\_IP\_FORWARD} et \textit {NF\_IP\_POST\_ROUTING}}{5}
 \contentsline {subsubsection}{\numberline {3.3.2}\textit {NF\_IP\_PRE\_ROUTING} et \textit {NF\_IP\_POST\_ROUTING}}{6}
 \contentsline {subsection}{\numberline {3.4}Lecture des statistiques sur les cartes r\IeC {\'e}seaux}{6}
-\contentsline {section}{\numberline {4}Localisation des files d'attente dans la couche liaison}{6}
-\contentsline {subsubsection}{\numberline {4.0.1}npkt++}{6}
-\contentsline {subsubsection}{\numberline {4.0.2}Wrapper pour les drivers ethernet (npkt--)}{7}
-\contentsline {section}{\numberline {5}Bibliographie}{7}
+\contentsline {subsection}{\numberline {3.5}Localisation des files d'attente dans la couche liaison}{6}
+\contentsline {subsubsection}{\numberline {3.5.1}npkt++}{6}
+\contentsline {subsubsection}{\numberline {3.5.2}Wrapper pour les drivers ethernet (npkt--)}{7}
+\contentsline {section}{\numberline {4}R\IeC {\'e}sultats}{7}
 \contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{8}
 \contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{8}
 \contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{8}

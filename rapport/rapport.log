@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.1.30)  1 FEB 2012 14:53
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.1.30)  1 FEB 2012 20:45
 entering extended mode
  %&-line parsing enabled.
 **rapport.tex
@@ -445,15 +445,14 @@ File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 <hooks.jpg, id=12, 956.57375pt x 515.9275pt>
 File: hooks.jpg Graphic file (type jpg)
  <use hooks.jpg>
-Overfull \hbox (25.31781pt too wide) in paragraph at lines 64--65
+Overfull \hbox (25.31781pt too wide) in paragraph at lines 98--99
  [][] 
  []
 
-[2 <./hooks.jpg>] <topo.jpg, id=17, 777.90625pt x 148.555pt>
+[2] <topo.jpg, id=18, 777.90625pt x 148.555pt>
 File: topo.jpg Graphic file (type jpg)
- <use topo.jpg>
-[3 <./topo.jpg>]
-Overfull \hbox (10.13283pt too wide) in paragraph at lines 184--188
+ <use topo.jpg> [3 <./hooks.jpg> <./topo.jpg>]
+Overfull \hbox (10.13283pt too wide) in paragraph at lines 186--190
 \OT1/cmr/m/n/10 (c'est-^^Ra-dire l'in-ter-face eth$1$ du rou-teur) pour trans-m
 et-tre des pa-quets ^^Ra des-ti-na-tion du r^^Seseau lan[]recepteur : 
  []
@@ -461,7 +460,7 @@ et-tre des pa-quets ^^Ra des-ti-na-tion du r^^Seseau lan[]recepteur :
 <ping.jpg, id=22, 723.70375pt x 461.725pt>
 File: ping.jpg Graphic file (type jpg)
  <use ping.jpg> [4 <./ping.jpg>]
-Overfull \hbox (29.4707pt too wide) in paragraph at lines 266--274
+Overfull \hbox (29.4707pt too wide) in paragraph at lines 269--277
 []\OT1/cmr/m/n/10 Les hooks con-cer-nant les pa-quets qui tra-versent le rou-te
 ur sont : \OT1/cmr/m/it/10 NF[]IP[]PRE[]ROUTING\OT1/cmr/m/n/10 , \OT1/cmr/m/it/
 10 NF[]IP[]FORWARD
@@ -470,11 +469,11 @@ ur sont : \OT1/cmr/m/it/10 NF[]IP[]PRE[]ROUTING\OT1/cmr/m/n/10 , \OT1/cmr/m/it/
 <forward_post.jpg, id=27, 413.545pt x 397.485pt>
 File: forward_post.jpg Graphic file (type jpg)
  <use forward_post.jpg>
-[5 <./forward_post.jpg>] [6] [7] [8] (./rapport.bbl) [9] (./rapport.aux) ) 
+[5] [6 <./forward_post.jpg>] [7] [8] (./rapport.bbl) [9] (./rapport.aux) ) 
 Here is how much of TeX's memory you used:
  2983 strings out of 495061
- 36014 string characters out of 1182621
- 97630 words of memory out of 3000000
+ 36016 string characters out of 1182621
+ 98630 words of memory out of 3000000
  6111 multiletter control sequences out of 15000+50000
  12677 words of font info for 49 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
@@ -490,7 +489,7 @@ usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/te
 xmf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-texlive/f
 onts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texmf-texlive/fonts/type1/
 public/amsfonts/cm/cmtt10.pfb>
-Output written on rapport.pdf (9 pages, 378266 bytes).
+Output written on rapport.pdf (9 pages, 377929 bytes).
 PDF statistics:
  80 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
