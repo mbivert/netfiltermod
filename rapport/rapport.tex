@@ -6,10 +6,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
-\usepackage{algorithmic}
 \usepackage{url}
 \usepackage{subfigure}
-\usepackage[squaren,Gray]{SIunits}
 
 % shorten margin
 \usepackage[]{fullpage}
@@ -54,7 +52,7 @@ des statistiques nécessaires pour le protocole IP-ERN.
 
 \subsection{Netfilter}
 Netfilter est un framework permettant l'interception des paquets
-grâce à des hooks : ce sont des points d'accroche dans le noyau.
+grâce à des hooks : ce sont des points d'accroche dans le noyau \cite{netfilter1}.
 Lorsqu'un événement réseau se produit (entrée d'un paquet par exemple),
 une fonction de callback associée à ce type d'évènement est appelée.
 A chaque hook, Netfilter permet d'accepter les paquets ou de s'en
@@ -351,6 +349,11 @@ Il nous faut donc aller un peu plus loin dans le code.
 
 \section{Localisation des files d'attente dans la couche liaison}
 \subsubsection{npkt++}
+A la réception des paquets, ces derniers sont stockés dans une file d’attente appelée backlog ou ingress queue, dans la couche Liaison. Il en existe une par processeur : cette file d’attente est donc liée à la vitesse de traitement des paquets. Une telle file ne nous intéresse pas car nous nous intéressons uniquement aux files d’attente liées aux vitesses d’émission.
+
+Après le passage dans les hooks Netfilter, le paquet traverse la couche Liaison. A ce niveau, il y a une mise en file d’émission pour chaque interface de sortie. Cette file d’émission existe entre la fonction noyau \textit{dev\_queue\_xmit} et la fonction \textit{hard\_start\_xmit}. La première fonction empile le paquet lorsqu’il passe de la couche Réseau à la couche Liaison. La deuxième fonction a pour but d’indiquer au noyau que les paquets ont été transmis à la carte réseau. Nous pouvons donc incrémenter le nombre de paquets au niveau de la fonction \textit{dev\_queue\_xmit}, qui prend en compte l’interface de sortie.
+
+Il n’est pas possible d’écrire un code modulaire pour ce type de manipulation. Nous sommes contraints de modifier le code du noyau. Cela implique la compilation d’un nouveau noyau, tâche assez lourde. 
 
 \subsubsection{Wrapper pour les drivers ethernet (npkt--)}
 Les fonctions permettant de manipuler une carte ethernet sont sous
@@ -400,5 +403,10 @@ l'être dans le noyau.
 \subsection{Mise en place d'un hook netfilter}
 \subsection{Synchronisation (spinlock)}
 \subsection{Compilation d'un noyau Linux}
+
+\newpage
+\bibliographystyle{ieeetr}
+\bibliography{docs}
+
 
 \end{document}
