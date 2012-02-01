@@ -1,25 +1,25 @@
 \select@language {french}
-\contentsline {section}{\numberline {1}Introduction}{1}
-\contentsline {section}{\numberline {2}Description du probl\IeC {\`e}me}{2}
-\contentsline {subsection}{\numberline {2.1}Contexte}{2}
-\contentsline {subsection}{\numberline {2.2}Netfilter}{2}
-\contentsline {section}{\numberline {3}Environnement de tests}{3}
-\contentsline {subsection}{\numberline {3.1}Architecture}{3}
-\contentsline {subsection}{\numberline {3.2}Test de connectivit\IeC {\'e}}{4}
-\contentsline {section}{\numberline {4}Calcul de la taille de la file d'attente avec Netfilter}{4}
-\contentsline {subsection}{\numberline {4.1}\textit {NF\_IP\_FORWARD} et \textit {NF\_IP\_POST\_ROUTING}}{5}
-\contentsline {subsection}{\numberline {4.2}\textit {NF\_IP\_PRE\_ROUTING} et \textit {NF\_IP\_POST\_ROUTING}}{6}
-\contentsline {subsection}{\numberline {4.3}Lecture des statistiques sur les cartes r\IeC {\'e}seaux}{6}
-\contentsline {section}{\numberline {5}Localisation des files d'attente dans la couche liaison}{7}
-\contentsline {subsection}{\numberline {5.1}Les files d'attente avant le routage}{7}
-\contentsline {subsection}{\numberline {5.2}Les files d'attente apr\IeC {\`e}s le routage}{7}
-\contentsline {subsubsection}{\numberline {5.2.1}File d'attente entre les fonctions dev\_queue\_xmit et hard\_start\_xmit}{7}
-\contentsline {subsubsection}{\numberline {5.2.2}La compilation du noyau Linux}{7}
-\contentsline {subsubsection}{\numberline {5.2.3}Un premier essai dans dev\_queue\_xmit}{8}
-\contentsline {subsubsection}{\numberline {5.2.4}Wrapper pour les drivers ethernet (npkt--)}{8}
-\contentsline {section}{\numberline {6}R\IeC {\'e}sultats}{9}
-\contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{11}
-\contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{11}
-\contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{11}
-\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{11}
-\contentsline {subsection}{\numberline {A.4}Compilation d'un noyau Linux}{11}
+\contentsline {section}{\numberline {1}Introduction}{3}
+\contentsline {section}{\numberline {2}Description du probl\IeC {\`e}me}{3}
+\contentsline {subsection}{\numberline {2.1}Contexte}{3}
+\contentsline {subsection}{\numberline {2.2}Netfilter}{3}
+\contentsline {section}{\numberline {3}Environnement de tests}{4}
+\contentsline {subsection}{\numberline {3.1}Architecture}{4}
+\contentsline {subsection}{\numberline {3.2}Test de connectivit\IeC {\'e}}{5}
+\contentsline {section}{\numberline {4}Calcul de la taille de la file d'attente avec Netfilter}{6}
+\contentsline {subsection}{\numberline {4.1}\textit {NF\_IP\_FORWARD} et \textit {NF\_IP\_POST\_ROUTING}}{6}
+\contentsline {subsection}{\numberline {4.2}\textit {NF\_IP\_PRE\_ROUTING} et \textit {NF\_IP\_POST\_ROUTING}}{7}
+\contentsline {subsection}{\numberline {4.3}Lecture des statistiques sur les cartes r\IeC {\'e}seaux}{7}
+\contentsline {section}{\numberline {5}Localisation des files d'attente dans la couche liaison}{8}
+\contentsline {subsection}{\numberline {5.1}Les files d'attente avant le routage}{8}
+\contentsline {subsection}{\numberline {5.2}Les files d'attente apr\IeC {\`e}s le routage}{8}
+\contentsline {subsubsection}{\numberline {5.2.1}File d'attente entre les fonctions dev\_queue\_xmit et hard\_start\_xmit}{8}
+\contentsline {subsubsection}{\numberline {5.2.2}La compilation du noyau Linux}{8}
+\contentsline {subsubsection}{\numberline {5.2.3}Un premier essai dans dev\_queue\_xmit}{9}
+\contentsline {subsubsection}{\numberline {5.2.4}Wrapper pour les drivers ethernet (npkt--)}{9}
+\contentsline {section}{\numberline {6}R\IeC {\'e}sultats}{10}
+\contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{12}
+\contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{12}
+\contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{12}
+\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{12}
+\contentsline {subsection}{\numberline {A.4}Compilation d'un noyau Linux}{12}

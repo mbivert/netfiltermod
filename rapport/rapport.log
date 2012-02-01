@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.1.30)  1 FEB 2012 23:19
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.1.30)  1 FEB 2012 23:53
 entering extended mode
  %&-line parsing enabled.
 **rapport.tex
@@ -435,80 +435,80 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 21.
 
 (/usr/share/texmf-texlive/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
-) (./rapport.toc)
+) [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./rapport.toc)
 \tf@toc=\write3
 \openout3 = `rapport.toc'.
 
- [1
-
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-<hooks.jpg, id=12, 956.57375pt x 515.9275pt>
+ [2]
+<hooks.jpg, id=15, 956.57375pt x 515.9275pt>
 File: hooks.jpg Graphic file (type jpg)
  <use hooks.jpg>
-Overfull \hbox (25.31781pt too wide) in paragraph at lines 98--99
+Overfull \hbox (25.31781pt too wide) in paragraph at lines 101--102
  [][] 
  []
 
-[2] <topo.jpg, id=18, 777.90625pt x 148.555pt>
+[3] <topo.jpg, id=21, 777.90625pt x 148.555pt>
 File: topo.jpg Graphic file (type jpg)
- <use topo.jpg> [3 <./hooks.jpg> <./topo.jpg>]
-Overfull \hbox (10.13283pt too wide) in paragraph at lines 187--191
+ <use topo.jpg> [4 <./hooks.jpg>]
+Overfull \hbox (10.13283pt too wide) in paragraph at lines 190--194
 \OT1/cmr/m/n/10 (c'est-^^Ra-dire l'in-ter-face eth$1$ du rou-teur) pour trans-m
 et-tre des pa-quets ^^Ra des-ti-na-tion du r^^Seseau lan[]recepteur : 
  []
 
-<ping.jpg, id=22, 723.70375pt x 461.725pt>
+<ping.jpg, id=25, 723.70375pt x 461.725pt>
 File: ping.jpg Graphic file (type jpg)
- <use ping.jpg> [4]
-Overfull \hbox (29.4707pt too wide) in paragraph at lines 270--278
+ <use ping.jpg> [5 <./topo.jpg>]
+Overfull \hbox (29.4707pt too wide) in paragraph at lines 273--281
 []\OT1/cmr/m/n/10 Les hooks con-cer-nant les pa-quets qui tra-versent le rou-te
 ur sont : \OT1/cmr/m/it/10 NF[]IP[]PRE[]ROUTING\OT1/cmr/m/n/10 , \OT1/cmr/m/it/
 10 NF[]IP[]FORWARD
  []
 
-<forward_post.jpg, id=27, 413.545pt x 397.485pt>
+<forward_post.jpg, id=30, 413.545pt x 397.485pt>
 File: forward_post.jpg Graphic file (type jpg)
  <use forward_post.jpg>
-[5 <./ping.jpg>]
-Overfull \hbox (14.77443pt too wide) in paragraph at lines 321--323
+[6 <./ping.jpg>]
+Overfull \hbox (14.77443pt too wide) in paragraph at lines 324--326
 []\OT1/cmr/m/n/10 Il nous faut donc re-garder en-tre deux autres hooks : \OT1/c
 mr/m/it/10 NF[]IP[]PRE[]ROUTING \OT1/cmr/m/n/10 et \OT1/cmr/m/it/10 NF[]IP[]POS
 T[]ROUTING\OT1/cmr/m/n/10 . 
  []
 
-[6 <./forward_post.jpg>] [7] [8] [9] (./rapport.bbl
-Underfull \hbox (badness 1127) in paragraph at lines 22--25
-[]$\OT1/cmtt/m/n/10 http : / / stackoverflow . com / questions / 7427402 / some
--[]question-[]about-[]kernel-[]object$\OT1/cmr/m/n/10 .  Mu-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 27--30
+[7 <./forward_post.jpg>] [8] [9] [10] (./rapport.bbl
+Underfull \hbox (badness 10000) in paragraph at lines 31--34
 []$\OT1/cmtt/m/n/10 http : / / www . linuxgrill . com / anonymous / fire / netf
 ilter / kernel-[]hacking-[]HOWTO-[]5 . html$\OT1/cmr/m/n/10 .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 32--35
+Underfull \hbox (badness 10000) in paragraph at lines 36--39
 []$\OT1/cmtt/m/n/10 http : / / wiki . linuxwall . info / doku . php / fr : ress
 ources : dossiers : networking : traffic _
  []
 
+
+Underfull \hbox (badness 10000) in paragraph at lines 59--62
+[]$\OT1/cmtt/m/n/10 http : / / gicl . cs . drexel . edu / people / sevy / netwo
+rk / Linux _ network _ stack _ walkthrough .
+ []
+
 )
-Overfull \hbox (0.86963pt too wide) in paragraph at lines 471--473
+Overfull \hbox (0.86963pt too wide) in paragraph at lines 474--476
 []\OT1/cmr/m/n/10 Commande mii-tool (con-fig-u-ra-tion vitesse) : http ://www.c
 yberciti.biz/faq/linux-change-the-speed-
  []
 
-[10] [11] (./rapport.aux) ) 
+[11] [12] (./rapport.aux) ) 
 Here is how much of TeX's memory you used:
- 2994 strings out of 495061
- 36117 string characters out of 1182621
- 98658 words of memory out of 3000000
- 6122 multiletter control sequences out of 15000+50000
+ 3001 strings out of 495061
+ 36175 string characters out of 1182621
+ 97690 words of memory out of 3000000
+ 6129 multiletter control sequences out of 15000+50000
  12677 words of font info for 49 fonts, out of 3000000 for 9000
  28 hyphenation exceptions out of 8191
- 27i,9n,24p,904b,282s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,9n,24p,933b,285s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/share/texmf-texlive/fonts/type1/public/amsfont
 s/cm/cmbx10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx12
 .pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbxti10.pfb></us
@@ -519,9 +519,9 @@ xmf-texlive/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive
 onts/cm/cmr17.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr8
 .pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/
 share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on rapport.pdf (11 pages, 388981 bytes).
+Output written on rapport.pdf (12 pages, 393835 bytes).
 PDF statistics:
- 86 PDF objects out of 1000 (max. 8388607)
+ 89 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  21 words of extra memory for PDF output out of 10000 (max. 10000000)
 

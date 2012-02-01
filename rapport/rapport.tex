@@ -14,13 +14,16 @@
 
 \title{Création d'un framework pour des routeurs
 	avec support pour notification de vitesse explicite
-	(kernel space)\\Encadrant: Dino Lopez}
-\author{Calypso Petit, François Chapuis, Sophie Valentin, Mathieu Bivert}
+	(kernel space)\\Tuteur : Dino LOPEZ}
+\author{Mathieu BIVERT, François CHAPUIS, Calypso PETIT, Sophie VALENTIN}
 
 \begin{document}
 \maketitle
+
+\newpage
 \tableofcontents
 
+\newpage
 \section{Introduction}
 
 L'essor de réseaux de grande envergure nécessite la mise en
@@ -153,7 +156,7 @@ Pour cela nous utilisons trois machines virtuelles lancées sur la même machine
 Comme un routeur sert à faire transiter des données d'un réseau à un autre, deux
 réseaux sont nécessaires ici : un sur lequel se trouve l'émetteur et un pour le récepteur.
 VirtualBox permet de créer des réseaux locaux et les différentes machines virtuelles
- peuvent appartenir au réseau local que l’on souhaite. Nous créons donc deux réseaux locaux 
+ peuvent appartenir au réseau local que l’on souhaite \cite{virtualbx}. Nous créons donc deux réseaux locaux 
  comme dans la figure \ref{reseaux1}.
 
 \begin{figure}
@@ -358,20 +361,20 @@ Après tous les tests que nous avons effectué précédemment, nous pouvons affi
 Schéma !
 
 \subsection{Les files d'attente avant le routage}
-Comme on peut le voir sur ce schéma issu de nos recherches, à la reception des paquets, ces derniers sont stockés dans une file d'attente appelée backlog ou ingress queue, dans la couche Liaison. Il en existe une par processeur.
-Lorsqu'un paquet entre, une interruption appelée \textit{NET\_RX\_SOFTIRQ} est levée. On peut choisir de traiter cette interruption grâce à un handler qui est une fonction appelée automatiquement lorsque l'interruption est levée. Nous avons donc essayer d'incrémenter le nombre de paquets dans ce handler et de continuer à le décrémenter  dans le hook \textit{NF\_IP\_POST\_ROUTING}. Malheureusement, le traitement des interruptions en mode noyau est avéré être plus compliqué que ce que nous pensions. Et nous n'avons pas voulu perdre de temps sur ce point puisque, par ailleurs, les recherches que nous avons fait nous ont appris que ces files d'attente sont liées à la vitesse de traitement des paquets. De telles files ne nous intéressent donc pas car nous nous intéressons uniquement aux files d'attente liées aux vitesses d'émission des paquets. 
+Comme on peut le voir sur ce schéma issu de nos recherches, à la reception des paquets, ces derniers sont stockés dans une file d'attente appelée backlog \cite{10poin} ou ingress queue, dans la couche Liaison. Il en existe une par processeur. 
+Lorsqu'un paquet entre, une interruption appelée \textit{NET\_RX\_SOFTIRQ} est levée. On peut choisir de traiter cette interruption grâce à un handler qui est une fonction appelée automatiquement lorsque l'interruption est levée. Nous avons donc essayer d'incrémenter le nombre de paquets dans ce handler et de continuer à le décrémenter  dans le hook \textit{NF\_IP\_POST\_ROUTING}. Malheureusement, le traitement des interruptions en mode noyau est avéré être plus compliqué que ce que nous pensions. Et nous n'avons pas voulu perdre de temps sur ce point puisque, par ailleurs, les recherches que nous avons fait nous ont appris que ces files d'attente sont liées à la vitesse de traitement des paquets \cite{journey} \cite{bookin}. De telles files ne nous intéressent donc pas car nous nous intéressons uniquement aux files d'attente liées aux vitesses d'émission des paquets. 
 
 \subsection{Les files d'attente après le routage}
 
 \subsubsection{File d'attente entre les fonctions dev\_queue\_xmit et hard\_start\_xmit}
 
-Après le passage dans les hooks Netfilter, le paquet traverse la couche Liaison. A ce niveau, il y a une mise en file d’émission pour chaque interface de sortie. Cette file d’émission existe entre la fonction noyau \textit{dev\_queue\_xmit} et la fonction \textit{hard\_start\_xmit}. La première fonction empile le paquet lorsqu’il passe de la couche Réseau à la couche Liaison. La deuxième fonction a pour but d’indiquer au noyau que les paquets ont été transmis à la carte réseau. Nous pouvons donc incrémenter le nombre de paquets au niveau de la fonction \textit{dev\_queue\_xmit}, qui prend en compte l’interface de sortie.
+Après le passage dans les hooks Netfilter, le paquet traverse la couche Liaison \cite{intel} \cite{stack}. A ce niveau, il y a une mise en file d’émission pour chaque interface de sortie. Cette file d’émission existe entre la fonction noyau \textit{dev\_queue\_xmit} et la fonction \textit{hard\_start\_xmit}. La première fonction empile le paquet lorsqu’il passe de la couche Réseau à la couche Liaison. La deuxième fonction a pour but d’indiquer au noyau que les paquets ont été transmis à la carte réseau. Nous pouvons donc incrémenter le nombre de paquets au niveau de la fonction \textit{dev\_queue\_xmit}, qui prend en compte l’interface de sortie.
 
 Il n’est pas possible d’écrire un code modulaire pour ce type de manipulation. Nous sommes contraints de modifier le code du noyau. Cela implique la compilation d’un nouveau noyau, tâche assez lourde. 
 
 \subsubsection{La compilation du noyau Linux}
 
-Pour pouvoir compiler un noyau Linux, il nous a fallu télécharger son code source. 
+Pour pouvoir compiler un noyau Linux \cite{compil}, il nous a fallu télécharger son code source. 
 Tout d'abord, nous avons télécharger sur le web une des versions les plus récentes. 
 Mais, avec cette version, nous n'avions pas le bon fichier de configuration. De ce fait, 
 la compilation du noyau prenait énormément d'espace sur le disque dur de la machine virtuelle 
@@ -471,6 +474,7 @@ l'être dans le noyau.
 	\item Commande mii-tool (configuration vitesse) : 
 	http://www.cyberciti.biz/faq/linux-change-the-speed-and-duplex-settings-of-an-ethernet-card/
 	\item Source du noyau : http://lxr.linux.no/
+	\item COMPLETER
 \end{itemize}
 
 
