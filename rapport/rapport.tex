@@ -22,12 +22,12 @@
 \tableofcontents
 
 \section{Introduction}
+
 L'essor de réseaux de grande envergure nécessite la mise en
 place de protocoles de contrôle de congestion. En effet,
 l'augmentation du traffic, et la distribution non-équitable
 des ressources entre les usagers, peuvent conduire à un
 ralentissement des communications.
-
 Une famille de protocoles de contrôle de congestion est l'IP-ERN
 (Explicit Rate Notification). Ils reposent sur les informations
 envoyées/calculées par des routeurs, comme le taux d'émission
@@ -398,7 +398,9 @@ l'être dans le noyau.
 
 \section{Résultats}
 
-Bibliographie
+\newpage
+\bibliographystyle{ieeetr}
+\bibliography{docs}
 
 \newpage
 \appendix
@@ -408,10 +410,5 @@ Bibliographie
 \subsection{Mise en place d'un hook netfilter}
 \subsection{Synchronisation (spinlock)}
 \subsection{Compilation d'un noyau Linux}
-
-\newpage
-\bibliographystyle{ieeetr}
-\bibliography{docs}
-
 
 \end{document}
