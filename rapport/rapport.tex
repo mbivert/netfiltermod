@@ -464,6 +464,29 @@ taille de la pile peut donc être effectuée ici, plutôt que de
 l'être dans le noyau.
 
 \section{Résultats}
+En réglant la vitesse et la taille du buffer avec tc, on peut observer
+une augmentation de qsize : les paquets rentrent, mais ne sortent jamais.
+L'hypothèse que nous avons par la suite vérifiée est que ces paquets
+sont droppés par la carte : en regardant la valeur de retour (\textit{rc}) à
+la  fin de \textit{dev\_queue\_xmit}, on voit bien  qu'elle est à
+\textit{NET\_XMIT\_DROP} à chaque fois que qsize n'est pas décrémenté
+en sortie:
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[scale=.5]{dropped.png}
+	\caption{\label{dropped} Après réglage avec tc(1)}
+\end{figure}
+
+Sans effectuer de  réglages, les paquets ne sont pas droppés, et, selon
+des facteurs indeterminés (vitesse carte? TODO), nous observons soit un
+qsize toujours à 0, soit un qsize grandissant à l'occasion, mais se
+réduisant par la suite:
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[scale=.5]{qsize_default.png}
+	\caption{\label{qsize_default} Sans réglage}
+\end{figure}
+
 
 \newpage
 \bibliographystyle{ieeetr}
