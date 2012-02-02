@@ -641,6 +641,9 @@ Les fonctions C \og classiques \fg\ ne sont plus disponibles, et
 des équivalents en mode noyau viennent les remplacer : par exemple,
 \textit{printf()} est remplacée par \textit{printk()}.
 
+Pour charger/décharger un noyau, on peut utiliser au choix
+\textit{insmod(8)} et \textit{rmmod(8)} ou encore \textit{modprobe(8)}.
+
 \subsection{Mise en place d'un hook netfilter}
 Un hook pour netfilter est une fonction
 \begin{verbatim}
