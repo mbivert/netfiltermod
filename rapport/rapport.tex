@@ -15,7 +15,8 @@
 \title{Création d'un framework pour des routeurs
 	avec support pour notification de vitesse explicite
 	(kernel space)\\Tuteur : Dino LOPEZ}
-\author{Mathieu BIVERT, François CHAPUIS, Calypso PETIT, Sophie VALENTIN}
+\author{Mathieu BIVERT, François CHAPUIS, 
+\\Calypso PETIT, Sophie VALENTIN}
 
 \makeatletter
 \def\thickhrulefill{\leavevmode \leaders \hrule height 1pt\hfill \kern \z@}
@@ -24,7 +25,7 @@
   \thispagestyle{empty}%
   \vskip 1cm
   \begin{center}
-        \normalfont\large\@author
+        \normalfont\large\huge\@author
   \end{center}
   \vfil
   \vfil
@@ -89,8 +90,8 @@
 
 Tous les réseaux de type Ethernet nécessitent un contrôle de congestion. En effet,
 l'augmentation du traffic, et la distribution non-équitable des ressources 
-entre les usagers, peuvent conduire dans le meilleur cas à un
-ralentissement des communications et dans le pire cas à des \textit{congestion collapses}.
+entre les usagers, peuvent conduire dans le meilleur des cas à un
+ralentissement des communications et dans le pire des cas à des \textit{congestion collapses}.
 La clé du succès de l'Internet est la mise en place du contrôle de congestion.
 
 Une famille de protocoles de contrôle de congestion est l'ERN
@@ -108,7 +109,7 @@ qui traversent le routeur.
 Dans un premier temps, nous allons préciser
 la problématique du sujet et l'outil principal utilisé. Puis dans un
 second temps, nous présenterons les solutions mises en oeuvre pour 
-l'élaboration des statistiques et leurs résultats. Enfin, nous concluerons sur ce qui a été fait
+l'élaboration des statistiques et leurs résultats. Enfin, nous conclurons sur ce qui a été fait
 et ce qu'il reste à faire.
 
 \section{Description du problème}
@@ -276,7 +277,7 @@ Côté récepteur, la configuration est analogue à celle de l'émetteur:
 
 \subsection{Test de connectivité}
 En guise de vérification, on essaye de \textit{pinger} le
-récépteur depuis l'émetteur (fig.\ref{ping1}):
+récépteur depuis l'émetteur (figure \ref{ping1}):
 
 \begin{figure}[!ht]
 	\centering
@@ -501,15 +502,16 @@ niveau supérieur : par exemple au niveau de l'appel à la fonction pointée par
 Cependant, le paquet peut très bien êtredépilé de \textit{qdisc}, mais ne pas
 être envoyé. Il est donc impératif de se placer à un niveau inférieur.
 
-\subsubsection{Wrapper pour les drivers ethernet (npkt--)}
+\subsubsection{Un second essai en utilisant la fonction dev\_hard\_start\_xmit()}
 
 Comme on l'a dit précédemment, à chaque fois que la fonction \textit{dev\_queue\_xmit()} est appelée, un paquet est mis en
 bufferisation. Nous avons vu que le décrément au niveau du pointeur de fonction \textit{dequeue} ne fonctionnait pas. Par 
-conséquent, nous avons cherché une fonction mettant le paquet dans la file d'attente de la carte réseau.
+conséquent, nous avons cherché une fonction mettant le paquet dans la file d'attente de la carte réseau. Il s'agit
+de la fonction \textit{ndo\_start\_xmit()} appelée dans \textit{dev\_hard\_start\_xmit()}. 
 
 Transition ?
 
-Les fonctions permettant de manipuler une carte ethernet sont sous
+Les fonctions permettant de manipuler une carte Ethernet sont sous
 linux abstraite par une structure : ajouter un driver revient donc
 à déclarer une structure et à remplir les différents champs, avec
 les fonctions adaptées à la carte.
@@ -543,8 +545,7 @@ La fonction \textit{dev\_hard\_start\_xmit()}, située dans
 placé, nous avons constaté que dans tous les cas, la fonction
 est appellée, plus ou moins directement, et qu'elle contient 
 un appel à \textit{ndo\_start\_xmit()} qui lancera la transmission réelle des paquets. La décrementation de la
-taille de la pile peut donc être effectuée ici, plutôt que de
-l'être dans le noyau.
+taille de la pile peut donc être effectuée ici.
 
 \section{Résultats}
 En réglant la vitesse et la taille du buffer avec tc, on peut observer
@@ -570,6 +571,16 @@ réduisant par la suite:
 	\caption{\label{qsize_default} Sans réglage}
 \end{figure}
 
+\section{Conclusion}
+Durant ce projet, nous avons fourni une analyse de la taille de la file d'attente
+réelle instantanée au sein d'un routeur ERN. Pour y parvenir, nous avons exploré 
+différentes solutions avant d'aboutir à la solution finale utililsant la couche Liaison. 
+Nos recherches nous ont fait appréhender un domaine jusqu'ici inconnu,
+celui de la recherche. Elles nous ont également permis de développer nos connaissances
+en réseau, en programmation en mode noyau et en virtualisation. 
+Nos résultats sont exploitables par les chercheurs. Néanmoins, une statistique telle que
+l'Input Traffic Rate devra être établie pour compléter le développement du framework
+de notre routeur.
 
 \newpage
 \bibliographystyle{ieeetr}
@@ -580,7 +591,6 @@ réduisant par la suite:
 	\item Commande mii-tool (configuration vitesse) : 
 	http://www.cyberciti.biz/faq/linux-change-the-speed-and-duplex-settings-of-an-ethernet-card/
 	\item Source du noyau : http://lxr.linux.no/
-	\item COMPLETER
 \end{itemize}
 
 

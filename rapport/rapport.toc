@@ -16,10 +16,11 @@
 \contentsline {subsubsection}{\numberline {5.2.1}File d'attente entre les fonctions dev\_queue\_xmit() et hard\_start\_xmit()}{8}
 \contentsline {subsubsection}{\numberline {5.2.2}La compilation du noyau Linux}{8}
 \contentsline {subsubsection}{\numberline {5.2.3}Un premier essai dans la fonction dev\_queue\_xmit()}{9}
-\contentsline {subsubsection}{\numberline {5.2.4}Wrapper pour les drivers ethernet (npkt--)}{9}
+\contentsline {subsubsection}{\numberline {5.2.4}Un second essai en utilisant la fonction dev\_hard\_start\_xmit()}{9}
 \contentsline {section}{\numberline {6}R\IeC {\'e}sultats}{10}
-\contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{12}
-\contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{12}
-\contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{12}
-\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{12}
-\contentsline {subsection}{\numberline {A.4}Compilation d'un noyau Linux}{12}
+\contentsline {section}{\numberline {7}Conclusion}{11}
+\contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{13}
+\contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{13}
+\contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{13}
+\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{13}
+\contentsline {subsection}{\numberline {A.4}Compilation d'un noyau Linux}{13}
