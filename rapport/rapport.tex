@@ -27,6 +27,14 @@
         \normalfont\large\@author
   \end{center}
   \vfil
+  \vfil
+  \vfil
+  \vfil
+  \vfil
+  \vfil
+  \vfil
+  \vfil
+  \vfil
   \hrule height 2pt
   \par
   \begin{center}
@@ -35,6 +43,29 @@
   \end{center}
   \hrule height 2pt
   \par
+  \vfil
+  \vfil
+  \vfil
+  \vfil
+  \vfil
+  \vfil
+  \vfil  
+  \vfil  
+  \vfil
+  \vfil  
+  \vfil
+  \vfil
+  \vfil
+  \vfil  
+  \vfil  
+  \vfil
+  \vfil  
+  \vfil  
+  \vfil
+  \vfil
+  \vfil
+  \vfil
+  \vfil
   \vfil
   \vfil
   \null
@@ -56,67 +87,79 @@
 \newpage
 \section{Introduction}
 
-L'essor de réseaux de grande envergure nécessite la mise en
-place de protocoles de contrôle de congestion. En effet,
-l'augmentation du traffic, et la distribution non-équitable
-des ressources entre les usagers, peuvent conduire à un
-ralentissement des communications.
-Une famille de protocoles de contrôle de congestion est l'IP-ERN
+Tous les réseaux de type Ethernet nécessitent un contrôle de congestion. En effet,
+l'augmentation du traffic, et la distribution non-équitable des ressources 
+entre les usagers, peuvent conduire dans le meilleur cas à un
+ralentissement des communications et dans le pire cas à des \textit{congestion collapses}.
+La clé du succès de l'Internet est la mise en place du contrôle de congestion.
+
+Une famille de protocoles de contrôle de congestion est l'ERN
 (Explicit Rate Notification) \cite{thesis1}. Ils reposent sur les informations
 envoyées/calculées par des routeurs, comme le taux d'émission
-optimal. Dans le cadre de notre projet, nous devons élaborer un
-module noyau à destination d'un routeur supportant l'IP-ERN.
-Un tel module établiera des statistiques sur les paquets TCP 
-qui traversent le routeur. Dans un premier temps, nous allons préciser
+optimal. 
+
+Dans le cadre de notre projet, nous devons élaborer un
+module noyau à destination d'un routeur supportant l'ERN.
+Un tel module établiera des statistiques sur les paquets ERN\footnote{Un paquet ERN est en fait 
+un paquet TCP avec des champs additionnels (dans les options TCP). Ces champs additionnels sont : 
+le DrdRate (Desired Rate), le RTT (Round-trip delay time) et le cwnd (valeur courante de la fenêtre de congestion)}
+qui traversent le routeur. 
+
+Dans un premier temps, nous allons préciser
 la problématique du sujet et l'outil principal utilisé. Puis dans un
 second temps, nous présenterons les solutions mises en oeuvre pour 
-l'élaboration des statistiques. Enfin, nous terminerons en faisant le
-bilan des résultats établis.
+l'élaboration des statistiques et leurs résultats. Enfin, nous concluerons sur ce qui a été fait
+et ce qu'il reste à faire.
 
 \section{Description du problème}
 \subsection{Contexte}
 Un routeur est une machine qui assure l’acheminement des données,
 d'un réseau informatique à un autre. Son rôle consiste à diriger
-les paquets d'une interface réseau vers une autre par le chemin
-le plus rapide et selon les règles définies dans la table de
+les paquets d'une interface réseau vers une autre par le meilleur chemin\footnote{Le meilleur chemin est défini par
+les politiques de routage. Il peut s'agir du chemin le plus court, le plus fiable ou le plus sécurisé.} et selon les règles définies dans la table de
 routage. 
 Les interfaces réseaux peuvent être assimilées à des
 portes par lesquelles les données entrent et sortent du routeur, et
 la table de routage à une façon de diriger les paquets à travers
-ces portes. 
+ces portes.
 Il s'agit ici de calculer des statistiques nécessaires 
-pour le protocole IP-ERN. Compte tenu de la courte durée du projet et 
+pour le protocole ERN. Un routeur ERN a besoin de connaître :
+\begin{itemize}
+	\item l'Input Traffic Rate;
+	\item le Qsize;
+	\item l'Output Capacity Link.
+\end{itemize}
+Compte tenu de la courte durée du projet et 
 du nombre important de concepts à assimiler (programmation de modules,
 management de mémoire, mécanismes de concurrence, structure du noyau, ...),
-nous nous sommes focalisés sur une statistique particulière : la taille
-de la file d'attente interne appelée Qsize.
+nous nous sommes focalisés sur une statistique particulière : l'occupation
+réelle instantanée de la file d'attente, appelée Qsize.
 
 En utilisant l'architecture de Netfilter, nous devons renseigner
 un tableau de statistiques comportant, pour chaque interface, le
 nombre de paquets entrants à destination de cette interface
-(Input Traffic Rate, \textit{I}) et le nombre de paquets sortants
-(Output Traffic Rate, \textit{O}) par cette interface. La quantité
-de donnée pouvant circuler sera donnée par l'Output Link Capacity
-(\textit{C}). Le tableau sera de la forme donnée par \ref{stats}.
+(Input Packets, \textit{I}) et le nombre de paquets sortants
+(Output Packets, \textit{O}) par cette interface. Le tableau sera de la forme donnée par le tableau \ref{stats}.
 \begin{figure}[!ht]
 	\centering
-	\begin{tabular}{c|c|c|c|c}
-		Nom de l'interface & I & O & C & Q = I-O \\
+	\begin{tabular}{c|c|c|c}
+		Nom de l'interface & I & O & Q = I-O \\
 		\hline
-		eth$0$ & $\ldots$ & $\ldots$ & $\ldots$ & $\ldots$ \\
-		eth$1$ & $\ldots$ & $\ldots$ & $\ldots$ & $\ldots$ \\
-		$\ldots$ & $\ldots$ & $\ldots$ & $\ldots$ & $\ldots$ \\
-		eth$n$ & $\ldots$ & $\ldots$ & $\ldots$ & $\ldots$ \\
+		eth$0$ & $\ldots$ & $\ldots$ & $\ldots$ \\
+		eth$1$ & $\ldots$ & $\ldots$ & $\ldots$ \\
+		$\ldots$ & $\ldots$ & $\ldots$ & $\ldots$ \\
+		eth$n$ & $\ldots$ & $\ldots$ & $\ldots$ \\
 	\end{tabular}
 	\caption{\label{stats} Statistiques requises par le protocole}
 \end{figure}
 
-En comptabilisant l'Input trafic Rate et l'Output trafic Rate,
-on pourra déterminer la taille de la file d'attente (Qsize).
+En comptabilisant I et O,
+on pourra déterminer Qsize à tout moment.
+Notons que Qsize est associé à une interface de sortie mais tient compte des paquets entrants par toutes les interfaces.
 
 \subsection{Netfilter}
 Netfilter est la première piste que nous avons décidé d'explorer pour 
-parvenir à calculer Qsize puisque c'était l'outil à utiliser selon le sujet du projet.
+parvenir à calculer Qsize puisque nous avons vu qu'un routeur ERN a été développé en utilisant Netfilter \cite{}.
 Netfilter est un framework permettant l'interception des paquets
 grâce à des hooks : ce sont des points d'accroche dans le noyau \cite{netfilter1}.
 Lorsqu'un événement réseau se produit (entrée d'un paquet par exemple),
@@ -164,7 +207,7 @@ Comme nous l'avons dit ci-dessus, la programmation en mode noyau peut avoir un g
 impact sur le fonctionnement de l'ordinateur en cas de bug. De ce fait, nous avons 
 décidé d'utiliser des machines virtuelles. Celles-ci vont également nous permettre 
 de mettre aisément en place les interfaces réseaux nécessaires aux tests.La mise en 
-place des machines virtuelles se fera grâce au logiciel VirtualBox.
+place des machines virtuelles se fera grâce au logiciel VirtualBox\cite{virtbox}.
 
 Dans un premier temps, on souhaite mettre en place une
 architecture réseau simple, constituée de trois machines, la
