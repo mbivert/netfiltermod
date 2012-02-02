@@ -68,8 +68,7 @@ nombre de paquets entrants à destination de cette interface
 (Output Traffic Rate, \textit{O}) par cette interface. La quantité
 de donnée pouvant circuler sera donnée par l'Output Link Capacity
 (\textit{C}). Le tableau sera de la forme donnée par \ref{stats}.
-
-\begin{figure}
+\begin{figure}[!ht]
 	\centering
 	\begin{tabular}{c|c|c|c|c}
 		Nom de l'interface & I & O & C & Q = I-O \\
@@ -159,7 +158,7 @@ VirtualBox permet de créer des réseaux locaux et les différentes machines vir
  peuvent appartenir au réseau local que l’on souhaite \cite{virtualbx}. Nous créons donc deux réseaux locaux 
  comme dans la figure \ref{reseaux1}.
 
-\begin{figure}
+\begin{figure}[!ht]
 	\centering
 	\begin{tabular}{c|c|c}
 	Nom du réseau & CIDR & Masque de sous-réseau\\
@@ -206,7 +205,7 @@ Côté récepteur, la configuration est analogue à celle de l'émetteur:
 En guise de vérification, on essaye de \textit{pinger} le
 récépteur depuis l'émetteur (fig.\ref{ping1}):
 
-\begin{figure}
+\begin{figure}[!ht]
 	\centering
 	\includegraphics[scale=.5]{ping.jpg}
 	\caption{\label{ping1} Émetteur et récépteur peuvent communiquer}
@@ -287,7 +286,7 @@ pas à la création d'une file d'attente interne.L'exécution du module
 utilisant ces deux hooks donne l'extrait de trace en
 fig.\ref{forwardpost}.
 
-\begin{figure}
+\begin{figure}[!ht]
 	\centering
 	\includegraphics[scale=.5]{forward_post.jpg}
 	\caption{\label{forwardpost} Trace obtenue entre FORWARD et POST}
@@ -386,29 +385,29 @@ apt_get install linux-source-2.6.32
 \end{verbatim}
 Nous avons choisi la version 2.6.32 car c'est celle que nous avions sur nos machines, 
 cela nous a permis de récupérer le fichier de configuration et la compilation prend beaucoup moins de place.
-Après avoir télécharger le noyau, il y a plusieurs étapes pour le compiler. 
+Après avoir téléchargé le noyau, il y a plusieurs étapes pour le compiler. 
 Le téléchargement nous procure un fichier compressé, il faut donc le décompresser :
 \begin{verbatim}
-tar xvjf linux-2.6.32.tar.bz2
+# tar xvjf linux-2.6.32.tar.bz2
 \end{verbatim}
 Une fois la décompression effectuée, il faut placer le fichier de configuration trouvé dans /boot dans le dossier contenant le noyau et le renommer en .config.
 Ensuite, il faut créer l'image binaire du noyau qui servira pour booter sur notre nouveau noyau :
 \begin{verbatim}
-make bzImage
+# make bzImage
 \end{verbatim}
 Les modules, qui comprennent notamment les pilotes utiles pour l'utilisation du clavier et de la souris par exemple, peuvent être compilés et installés :
 \begin{verbatim}
-make modules
-make modules_install
+# make modules
+# make modules_install
 \end{verbatim}
 Enfin, on peut compiler et installer le noyau lui-même :
 \begin{verbatim}
-make
-make install
+# make
+# make install
 \end{verbatim}
 Pour pouvoir booter sur ce noyau ainsi installé, il faut taper la commande :
 \begin{verbatim}
-update-grub
+# update-grub
 \end{verbatim}
 et redémarrer l'ordinateur.
 
@@ -423,7 +422,8 @@ quand un appel à la fonction pointée par enqueue est fait. En revanche, nous a
 \textit{hard\_start\_xmit} est implémentée au niveau des drivers. Cela implique que l'implémentation de la fonction 
 diffère selon la carte réseau. Pour pallier ce problème, nous voulons décrémenter le nombre de paquets à un 
 niveau supérieur : par exemple au niveau de l'appel à la fonction pointée par dequeue.
-Malheureusement cela ne convient pas car ... COMPLETER !
+Cependant, le paquet peut très bien êtredépilé de \textit{qdisc}, mais ne pas
+être envoyé. Il est donc impératif de se placer à un niveau inférieur.
 
 \subsubsection{Wrapper pour les drivers ethernet (npkt--)}
 Les fonctions permettant de manipuler une carte ethernet sont sous
