@@ -17,6 +17,36 @@
 	(kernel space)\\Tuteur : Dino LOPEZ}
 \author{Mathieu BIVERT, François CHAPUIS, Calypso PETIT, Sophie VALENTIN}
 
+\makeatletter
+\def\thickhrulefill{\leavevmode \leaders \hrule height 1pt\hfill \kern \z@}
+\def\maketitle{%
+  \null
+  \thispagestyle{empty}%
+  \vskip 1cm
+  \begin{center}
+        \normalfont\large\@author
+  \end{center}
+  \vfil
+  \hrule height 2pt
+  \par
+  \begin{center}
+        \huge \strut \@title \par
+        \@date
+  \end{center}
+  \hrule height 2pt
+  \par
+  \vfil
+  \vfil
+  \null
+\begin{figure}[!ht]
+        \centering
+        \includegraphics[scale=.5]{polytech.png}
+\end{figure}
+\vfil
+\cleardoublepage
+}
+\makeatother
+
 \begin{document}
 \maketitle
 

@@ -1,4 +1,4 @@
-This is pdfeTeX, Version 3.141592-1.21a-2.2 (Web2C 7.5.4) (format=pdflatex 2010.5.17)  2 FEB 2012 11:30
+This is pdfeTeX, Version 3.141592-1.21a-2.2 (Web2C 7.5.4) (format=pdflatex 2010.5.17)  2 FEB 2012 15:19
 entering extended mode
 **rapport.tex
 (./rapport.tex
@@ -385,24 +385,24 @@ Package: fullpage 1999/02/23 1.1 (PWD)
 ) (./rapport.aux)
 \openout1 = `rapport.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for T1/lmr/m/n on input line 20.
-LaTeX Font Info:    Try loading font information for T1+lmr on input line 20.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for T1/lmr/m/n on input line 50.
+LaTeX Font Info:    Try loading font information for T1+lmr on input line 50.
 
 (/usr/share/texmf/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2003/07/22 v1.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 20.
-LaTeX Font Info:    ... okay on input line 20.
-LaTeX Info: Redefining \dots on input line 20.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 50.
+LaTeX Font Info:    ... okay on input line 50.
+LaTeX Info: Redefining \dots on input line 50.
 
 (/usr/share/texmf/tex/context/base/supp-pdf.tex
 (/usr/share/texmf/tex/context/base/supp-mis.tex
@@ -437,60 +437,65 @@ loading : Context Support Macros / PDF (2004.03.26)
 \MPscratchDim=\dimen125
 \MPnumerator=\count116
 \everyMPtoPDFconversion=\toks23
-)
-LaTeX Font Info:    Try loading font information for U+msa on input line 21.
- (/usr/share/texmf/tex/latex/amsfonts/umsa.fd
+) <polytech.png, id=1, 306.1839pt x 95.1555pt>
+File: polytech.png Graphic file (type png)
+ <use polytech.png> [1
+
+{/usr/share/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./polytech.png>] (./
+rapport.toc
+LaTeX Font Info:    Try loading font information for U+msa on input line 4.
+(/usr/share/texmf/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2002/01/19 v2.2g AMS font definitions
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 21.
+LaTeX Font Info:    Try loading font information for U+msb on input line 4.
 
 (/usr/share/texmf/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2002/01/19 v2.2g AMS font definitions
-) [1
-
-{/usr/share/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (./rapport.toc)
+))
 \tf@toc=\write4
 \openout4 = `rapport.toc'.
 
- [2]
-<hooks.jpg, id=26, 956.57375pt x 515.9275pt>
+ [2
+
+]
+<hooks.jpg, id=27, 956.57375pt x 515.9275pt>
 File: hooks.jpg Graphic file (type jpg)
  <use hooks.jpg>
-Overfull \hbox (25.31781pt too wide) in paragraph at lines 100--101
+Overfull \hbox (25.31781pt too wide) in paragraph at lines 130--131
  [][] 
  []
 
-[3] <topo.jpg, id=36, 777.90625pt x 148.555pt>
+[3] <topo.jpg, id=37, 777.90625pt x 148.555pt>
 File: topo.jpg Graphic file (type jpg)
  <use topo.jpg> [4 <./hooks.jpg>]
-Overfull \hbox (10.13283pt too wide) in paragraph at lines 189--193
+Overfull \hbox (10.13283pt too wide) in paragraph at lines 219--223
 \OT1/cmr/m/n/10 (c'est-^^Ra-dire l'in-ter-face eth$1$ du rou-teur) pour trans-m
 ettre des pa-quets ^^Ra des-ti-na-tion du r^^Seseau lan[]recepteur : 
  []
 
-<ping.jpg, id=40, 723.70375pt x 461.725pt>
+<ping.jpg, id=41, 723.70375pt x 461.725pt>
 File: ping.jpg Graphic file (type jpg)
  <use ping.jpg> [5 <./topo.jpg>]
-Overfull \hbox (29.4707pt too wide) in paragraph at lines 272--280
+Overfull \hbox (29.4707pt too wide) in paragraph at lines 302--310
 []\OT1/cmr/m/n/10 Les hooks concer-nant les pa-quets qui tra-versent le rou-teu
 r sont : \OT1/cmr/m/it/10 NF[]IP[]PRE[]ROUTING\OT1/cmr/m/n/10 , \OT1/cmr/m/it/1
 0 NF[]IP[]FORWARD
  []
 
-<forward_post.jpg, id=47, 413.545pt x 397.485pt>
+<forward_post.jpg, id=48, 413.545pt x 397.485pt>
 File: forward_post.jpg Graphic file (type jpg)
  <use forward_post.jpg>
 [6 <./ping.jpg>]
-Overfull \hbox (14.77443pt too wide) in paragraph at lines 323--325
+Overfull \hbox (14.77443pt too wide) in paragraph at lines 353--355
 []\OT1/cmr/m/n/10 Il nous faut donc re-gar-der entre deux autres hooks : \OT1/c
 mr/m/it/10 NF[]IP[]PRE[]ROUTING \OT1/cmr/m/n/10 et \OT1/cmr/m/it/10 NF[]IP[]POS
 T[]ROUTING\OT1/cmr/m/n/10 . 
  []
 
-[7 <./forward_post.jpg>] [8] [9] <dropped.png, id=64, 642.4pt x 481.8pt>
+[7 <./forward_post.jpg>] [8] [9] <dropped.png, id=65, 642.4pt x 481.8pt>
 File: dropped.png Graphic file (type png)
 
-<use dropped.png> <qsize_default.png, id=65, 642.4pt x 481.8pt>
+<use dropped.png> <qsize_default.png, id=66, 642.4pt x 481.8pt>
 File: qsize_default.png Graphic file (type png)
 
 <use qsize_default.png> [10 <./dropped.png>] (./rapport.bbl
@@ -506,30 +511,30 @@ rk / Linux[]network[]stack[]walkthrough . html$\OT1/cmr/m/n/10 .
  []
 
 )
-Overfull \hbox (0.86963pt too wide) in paragraph at lines 497--499
+Overfull \hbox (0.86963pt too wide) in paragraph at lines 527--529
 []\OT1/cmr/m/n/10 Commande mii-tool (confi-gu-ra-tion vi-tesse) : http ://www.c
 yberciti.biz/faq/linux-change-the-speed-
  []
 
 [11 <./qsize_default.png>] [12] (./rapport.aux) ) 
 Here is how much of TeX's memory you used:
- 2909 strings out of 94500
- 33737 string characters out of 1176766
- 89626 words of memory out of 1000000
- 6021 multiletter control sequences out of 10000+50000
- 13022 words of font info for 51 fonts, out of 500000 for 2000
+ 2886 strings out of 94500
+ 33548 string characters out of 1176766
+ 89655 words of memory out of 1000000
+ 6009 multiletter control sequences out of 10000+50000
+ 8666 words of font info for 34 fonts, out of 500000 for 2000
  580 hyphenation exceptions out of 1000
  27i,10n,24p,933b,337s stack positions out of 1500i,500n,5000p,200000b,5000s
 PDF statistics:
- 79 PDF objects out of 300000
+ 80 PDF objects out of 300000
  0 named destinations out of 131072
- 31 words of extra memory for PDF output out of 65536
+ 36 words of extra memory for PDF output out of 65536
 </usr/share/texmf/fonts/type1/
 bluesky/cm/cmsy7.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmbxti10.pfb></us
 r/share/texmf/fonts/type1/bluesky/cm/cmtt10.pfb></usr/share/texmf/fonts/type1/b
 luesky/cm/cmcsc10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmmi10.pfb></usr
 /share/texmf/fonts/type1/bluesky/cm/cmti10.pfb></usr/share/texmf/fonts/type1/bl
-uesky/cm/cmbx10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmbx12.pfb></usr/s
-hare/texmf/fonts/type1/bluesky/cm/cmr10.pfb></usr/share/texmf/fonts/type1/blues
-ky/cm/cmr12.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr17.pfb>
-Output written on rapport.pdf (12 pages, 338108 bytes).
+uesky/cm/cmr10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmbx10.pfb></usr/sh
+are/texmf/fonts/type1/bluesky/cm/cmbx12.pfb></usr/share/texmf/fonts/type1/blues
+ky/cm/cmr17.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr12.pfb>
+Output written on rapport.pdf (12 pages, 443904 bytes).
