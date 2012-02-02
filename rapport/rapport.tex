@@ -128,7 +128,7 @@ pour le protocole ERN. Un routeur ERN a besoin de connaître :
 \begin{itemize}
 	\item l'Input Traffic Rate;
 	\item le Qsize;
-	\item l'Output Capacity Link.
+	\item l'Output Capacity Link (déjà connu).
 \end{itemize}
 Compte tenu de la courte durée du projet et 
 du nombre important de concepts à assimiler (programmation de modules,
@@ -156,11 +156,11 @@ nombre de paquets entrants à destination de cette interface
 
 En comptabilisant I et O,
 on pourra déterminer Qsize à tout moment.
-Notons que Qsize est associé à une interface de sortie mais tient compte des paquets entrants par toutes les interfaces.
+Notons que la statistique Qsize est associée à une interface de sortie mais tient compte des paquets entrants par toutes les interfaces.
 
 \subsection{Netfilter}
 Netfilter est la première piste que nous avons décidé d'explorer pour 
-parvenir à calculer Qsize puisque nous avons vu qu'un routeur ERN a été développé en utilisant Netfilter \cite{}.
+parvenir à calculer Qsize puisque nous avons vu qu'un routeur ERN a été développé en utilisant Netfilter \cite{stanford}.
 Netfilter est un framework permettant l'interception des paquets
 grâce à des hooks : ce sont des points d'accroche dans le noyau \cite{netfilter1}.
 Lorsqu'un événement réseau se produit (entrée d'un paquet par exemple),
@@ -182,7 +182,7 @@ de routage, les paquets à destination du routeur sont dirigés vers un
 processus interne et passent par le deuxième hook, \textit{NF\_IP\_LOCAL\_IN}. 
 Quant aux autres paquets, ils sont dirigés vers une interface de sortie 
 et traversent successivement le troisième hook, \textit{NF\_IP\_FORWARD} puis le 
-quatrième, \textit{NF\_IP\_POST\_ROUTING}, avant de sortie du routeur. Les paquets 
+quatrième, \textit{NF\_IP\_POST\_ROUTING}, avant de sortir du routeur. Les paquets 
 peuvent aussi être créés par le routeur lui-même, ils passent alors 
 par le hook \textit{NF\_IP\_LOCAL\_OUT}.
 
@@ -198,7 +198,7 @@ En ce qui concerne la programmation des modules en mode noyau sous Linux, elle e
 vraiment différente de celle en mode utilisateur. En effet, les bibliothèques sont 
 plus restreintes et le débogage plus ardu, car le moindre accès mémoire invalide peut 
 rendre le système inutilisable. Les détails techniques concernant ce type de programmation 
-sont évoqués en annexe [numéro de l'annexe].
+sont évoqués en annexe A.?.
 
 \section{Environnement de tests}
 
@@ -207,12 +207,12 @@ sont évoqués en annexe [numéro de l'annexe].
 Comme nous l'avons dit ci-dessus, la programmation en mode noyau peut avoir un grave 
 impact sur le fonctionnement de l'ordinateur en cas de bug. De ce fait, nous avons 
 décidé d'utiliser des machines virtuelles. Celles-ci vont également nous permettre 
-de mettre aisément en place les interfaces réseaux nécessaires aux tests.La mise en 
+de mettre aisément en place les interfaces réseaux nécessaires aux tests. La mise en 
 place des machines virtuelles se fera grâce au logiciel VirtualBox\cite{virtbox}.
 
 Dans un premier temps, on souhaite mettre en place une
 architecture réseau simple, constituée de trois machines, la
-figure \ref{topo} indiquant la topologie réseau suivie:
+figure \ref{topo} indiquant la topologie réseau suivie :
 \begin{itemize}
 	\item un émetteur;
 	\item un routeur;
@@ -276,7 +276,7 @@ Côté récepteur, la configuration est analogue à celle de l'émetteur:
 \end{verbatim}
 
 \subsection{Test de connectivité}
-En guise de vérification, on essaye de \textit{pinger} le
+En guise de vérification, on essaie de \textit{pinger} le
 récépteur depuis l'émetteur (figure \ref{ping1}):
 
 \begin{figure}[!ht]
@@ -333,8 +333,7 @@ Dans le premier hook, l'input trafic rate de l'interface de sortie est incrémen
 l'output trafic rate de l'interface de sortie est incrémenté.
  
 Après chaque opération, on met à jour la taille de la file
-d'attente de l'interface de sortie en soustrayant l'Input Traffic
-Rate par l'Output Traffic Rate.
+d'attente de l'interface de sortie en soustrayant l'Input Packets par l'Output Packets.
 
 Les deux hooks pouvant accéder aux mêmes données en même temps,
 il est indispensable de mettre en place un mécanisme de
@@ -349,16 +348,16 @@ Les hooks concernant les paquets qui traversent le routeur sont :
 \textit{NF\_IP\_FORWARD} et \textit{NF\_IP\_POST\_ROUTING}
 contiennent l'information sur l'interface de sortie dans la
 structure \textit{net\_device}. Par conséquent, nous allons
-tout d'abords chercher la taille de la pile entre
+tout d'abord chercher la taille de la pile entre
 \textit{NF\_IP\_FORWARD} et \textit{NF\_IP\_POST\_ROUTING}.
 
 \subsection{\textit{NF\_IP\_FORWARD} et \textit{NF\_IP\_POST\_ROUTING}}
 Pour commencer, les vitesses maximales des interfaces eth$1$ et
 eth$2$ sont configurées de la même façon. Ainsi, on s'attend à
 ce que la sortie des paquets soit fluide : nous ne nous attendons
-pas à la création d'une file d'attente interne.L'exécution du module
+pas à la création d'une file d'attente interne. L'exécution du module
 utilisant ces deux hooks donne l'extrait de trace en
-fig.\ref{forwardpost}.
+figure \ref{forwardpost}.
 
 \begin{figure}[!ht]
 	\centering
@@ -403,9 +402,9 @@ hooks : \textit{NF\_IP\_PRE\_ROUTING} et \textit{NF\_IP\_POST\_ROUTING}.
 L'interface de sortie n'étant pas disponible dans le hook \textit{NF\_IP\_PRE\_ROUTING},
 il va nous falloir effectuer le routage à la main pour déterminer à quelle interface de sortie le paquet est destiné. Notre
 objectif étant de chercher où se trouve la file, nous nous
-contentons d'un routage manuel, avec des adresse IP fixes dans le code.
+contentons d'un routage manuel, avec des adresses IP fixes dans le code.
 
-Nous obtenons finalement le même résultats que précédemment. 
+Nous obtenons finalement le même résultat que précédemment. 
 Il semble donc qu'il soit impossible d'utiliser Netfilter pour
 obtenir les statistiques. 
 
@@ -420,9 +419,14 @@ définie dans \textit{linux/netdevice.h} fournit :
 	\item et le nombre de paquets “dropped”.
 \end{itemize}
 
-Ces statistiques pourraient nous aider à calculer Qsize. Cependant,
-elles ne permettent pas de différencier les paquets TCP des autres paquets.
-Il nous faut donc aller un peu plus loin dans le code.
+Ces statistiques pourraient nous aider à calculer Qsize. 
+Effectivement, pour une interface de sortie donnée on connaît le nombree de paquets transmis par cette interface.
+Il faut se placer maintenant sur chacune des autres interfaces, et comptabiliser le nombre de paquets entrants à destination
+de notre interface de sortie. Cela est possible à condition d'effectuer un routage des paquets pour connaître leur destination.
+
+Cependant,
+les statistiques sur les cartes réseaux ne permettent pas de différencier les paquets TCP des autres paquets. De plus, le routage évoqué
+est assez lourd. Il nous faut donc aller un peu plus loin dans le code.
 
 \section{Analyse de la file d'attente au niveau de couche Liaison
 }
