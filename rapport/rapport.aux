@@ -33,6 +33,7 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces  \IeC {\'E}metteur et r\IeC {\'e}c\IeC {\'e}pteur peuvent communiquer}}{6}}
 \newlabel{ping1}{{5}{6}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Calcul de la taille de la file d'attente avec Netfilter}{6}}
+\citation{netem}
 \citation{tc1}
 \citation{tcman}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}\textit  {NF\_IP\_FORWARD} et \textit  {NF\_IP\_POST\_ROUTING}}{7}}
@@ -40,18 +41,16 @@
 \newlabel{forwardpost}{{6}{7}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}\textit  {NF\_IP\_PRE\_ROUTING} et \textit  {NF\_IP\_POST\_ROUTING}}{7}}
 \citation{10poin}
-\citation{journey}
-\citation{bookin}
 \citation{intel}
 \citation{stack}
 \citation{compil}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Lecture des statistiques sur les cartes r\IeC {\'e}seaux}{8}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Localisation des files d'attente dans la couche liaison}{8}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Les files d'attente avant le routage}{8}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Les files d'attente apr\IeC {\`e}s le routage}{8}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}File d'attente entre les fonctions dev\_queue\_xmit et hard\_start\_xmit}{8}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Analyse de la file d'attente au niveau de couche Liaison }{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Les files d'attente en entr\IeC {\'e}e}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Les files d'attente en sortie}{8}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}File d'attente entre les fonctions dev\_queue\_xmit() et hard\_start\_xmit()}{8}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}La compilation du noyau Linux}{8}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}Un premier essai dans dev\_queue\_xmit}{9}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}Un premier essai dans la fonction dev\_queue\_xmit()}{9}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.4}Wrapper pour les drivers ethernet (npkt--)}{9}}
 \@writefile{toc}{\contentsline {section}{\numberline {6}R\IeC {\'e}sultats}{10}}
 \@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces  Apr\IeC {\`e}s r\IeC {\'e}glage avec tc(1)}}{10}}
@@ -66,18 +65,17 @@
 \bibcite{skbuff}{6}
 \bibcite{mutex}{7}
 \bibcite{lock}{8}
-\bibcite{tc1}{9}
-\bibcite{tcman}{10}
-\bibcite{10poin}{11}
-\bibcite{journey}{12}
-\bibcite{bookin}{13}
-\bibcite{intel}{14}
-\bibcite{stack}{15}
-\bibcite{compil}{16}
+\bibcite{netem}{9}
+\bibcite{tc1}{10}
+\bibcite{tcman}{11}
+\bibcite{10poin}{12}
+\bibcite{intel}{13}
+\bibcite{stack}{14}
+\bibcite{compil}{15}
 \@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces  Sans r\IeC {\'e}glage}}{11}}
 \newlabel{qsize_default}{{8}{11}}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{13}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{13}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{13}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{13}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Compilation d'un noyau Linux}{13}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Compilation d'un noyau Linux}{12}}

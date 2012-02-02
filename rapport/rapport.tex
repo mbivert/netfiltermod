@@ -229,12 +229,12 @@ Comme un routeur sert à faire transiter des données d'un réseau à un autre, 
 réseaux sont nécessaires ici : un sur lequel se trouve l'émetteur et un pour le récepteur.
 VirtualBox permet de créer des réseaux locaux et les différentes machines virtuelles
  peuvent appartenir au réseau local que l’on souhaite \cite{virtualbx}. Nous créons donc deux réseaux locaux 
- comme dans la figure \ref{reseaux1}.
+ comme dans le tableau \ref{reseaux1}.
 
 \begin{figure}[!ht]
 	\centering
 	\begin{tabular}{c|c|c}
-	Nom du réseau & CIDR & Masque de sous-réseau\\
+	Nom du réseau & Adresse réseau & Masque réseau\\
 	lan\_emetteur & 100.100.100.0/24 & 255.255.255.0\\
 	lan\_recepteur & 200.200.200.0/24 & 255.255.255.0\\
 	\end{tabular}
@@ -286,8 +286,8 @@ récépteur depuis l'émetteur (fig.\ref{ping1}):
 
 La commande \textit{ping} n'est pas suffisante pour envoyer
 des paquets dans le cadre de notre projet car elle utilise
-le protocole ICMP et non le protocole IP. Par conséquent,
-nous avons cherché un outil utilisant les protocoles IP et TCP.
+le protocole ICMP et non le protocole TCP. Par conséquent,
+nous avons cherché un outil utilisant le protocole TCP.
 La commande \textit{iperf} permet d'envoyer entre un client et
 un serveur des paquets TCP ou UDP. Nous l'avons donc utilisé
 entre l'émetteur et le récépteur. Par défaut \textit{iperf}
@@ -375,7 +375,7 @@ fonction de callback du hook \textit{NF\_IP\_POST\_ROUTING}.
 
 À présent, on configure la bande passante maximale de l'interface
 eth$2$ afin que la vitesse maximale soit de $10$ Mbits/seconde.
-Pour cela, on utilise la commande \textit{tc} (traffic control) \cite{tc1} \cite{tcman}.
+Pour cela, on utilise netem \cite{netem} avec la commande \textit{tc} (traffic control) \cite{tc1} \cite{tcman}.
 Cette commande va agir sur le fonctionnement des files d’attente
 en sortie d’une interface donnée.
 \begin{verbatim}
@@ -389,8 +389,10 @@ $10$Mbits/seconde.
 Après avoir ainsi configuré la vitesse maximale,
 nous nous attendons à obtenir une file d’attente non nulle.
 Les résultats des tests effectués nous montrent que la taille
-de la file d’attente est toujours nulle, ce qui prouve que la
-file d’attente interne ne se trouve pas entre les hooks
+de la file d’attente est toujours nulle et qu'on n'a jamais
+deux appels consécutifs au hook \textit{NF\_IP\_FORWARD}. 
+Les paquets sont donc traités complètement : la file d'attente
+ne se trouve pas entre les hooks
 \textit{NF\_IP\_FORWARD} et \textit{NF\_IP\_POST\_ROUTING}.
 
 Il nous faut donc regarder entre deux autres 
@@ -421,26 +423,27 @@ Ces statistiques pourraient nous aider à calculer Qsize. Cependant,
 elles ne permettent pas de différencier les paquets TCP des autres paquets.
 Il nous faut donc aller un peu plus loin dans le code.
 
-\section{Localisation des files d'attente dans la couche liaison}
+\section{Analyse de la file d'attente au niveau de couche Liaison
+}
 
 Après tous les tests que nous avons effectué précédemment, nous pouvons affirmer
  que la file d'attente contenant les paquets qui n'ont pas encore été traités ne
-  se situe pas au niveau du routeur, c'est-à-dire dans la couche Réseau du modèle 
-  OSI. Par conséquent, nous allons tenter de la localiser dans la couche
+  se situe pas dans la couche Réseau du modèle 
+  OSI. Par conséquent, nous allons tenter de l'analyser dans la couche
    inférieure du modèle OSI : la couche Liaison. Voici le schéma représentant
     les différentes phases du traitement d'un paquet :
 
 Schéma !
 
-\subsection{Les files d'attente avant le routage}
+\subsection{Les files d'attente en entrée}
 Comme on peut le voir sur ce schéma issu de nos recherches, à la reception des paquets, ces derniers sont stockés dans une file d'attente appelée backlog \cite{10poin} ou ingress queue, dans la couche Liaison. Il en existe une par processeur. 
-Lorsqu'un paquet entre, une interruption appelée \textit{NET\_RX\_SOFTIRQ} est levée. On peut choisir de traiter cette interruption grâce à un handler qui est une fonction appelée automatiquement lorsque l'interruption est levée. Nous avons donc essayer d'incrémenter le nombre de paquets dans ce handler et de continuer à le décrémenter  dans le hook \textit{NF\_IP\_POST\_ROUTING}. Malheureusement, le traitement des interruptions en mode noyau est avéré être plus compliqué que ce que nous pensions. Et nous n'avons pas voulu perdre de temps sur ce point puisque, par ailleurs, les recherches que nous avons fait nous ont appris que ces files d'attente sont liées à la vitesse de traitement des paquets \cite{journey} \cite{bookin}. De telles files ne nous intéressent donc pas car nous nous intéressons uniquement aux files d'attente liées aux vitesses d'émission des paquets. 
+Lorsqu'un paquet entre, une interruption appelée \textit{NET\_RX\_SOFTIRQ} est levée. On peut choisir de traiter cette interruption grâce à un handler qui est une fonction appelée automatiquement lorsque l'interruption est levée. Nous avons donc essayer d'incrémenter le nombre de paquets dans ce handler et de continuer à le décrémenter  dans le hook \textit{NF\_IP\_POST\_ROUTING}. Malheureusement, le traitement des interruptions est avéré être plus compliqué que ce que nous pensions. Et nous n'avons pas voulu perdre de temps sur ce point puisque nos recherches nous ont appris que dans le cadre d'un routeur ERN, seul le taux d'occupation de la file d'attente entre en jeu. De telles files ne nous intéressent donc pas. 
 
-\subsection{Les files d'attente après le routage}
+\subsection{Les files d'attente en sortie}
 
-\subsubsection{File d'attente entre les fonctions dev\_queue\_xmit et hard\_start\_xmit}
+\subsubsection{File d'attente entre les fonctions dev\_queue\_xmit() et hard\_start\_xmit()}
 
-Après le passage dans les hooks Netfilter, le paquet traverse la couche Liaison \cite{intel} \cite{stack}. A ce niveau, il y a une mise en file d’émission pour chaque interface de sortie. Cette file d’émission existe entre la fonction noyau \textit{dev\_queue\_xmit} et la fonction \textit{hard\_start\_xmit}. La première fonction empile le paquet lorsqu’il passe de la couche Réseau à la couche Liaison. La deuxième fonction a pour but d’indiquer au noyau que les paquets ont été transmis à la carte réseau. Nous pouvons donc incrémenter le nombre de paquets au niveau de la fonction \textit{dev\_queue\_xmit}, qui prend en compte l’interface de sortie.
+Après le passage dans les hooks Netfilter, le paquet traverse la couche Liaison \cite{intel} \cite{stack}. A ce niveau, il y a une mise en file d’émission pour chaque interface de sortie. Cette file d’émission existe entre la fonction noyau \textit{dev\_queue\_xmit()} et la fonction \textit{hard\_start\_xmit()}. La première fonction empile le paquet lorsqu’il passe de la couche Réseau à la couche Liaison. La deuxième fonction a pour but d’indiquer au noyau que les paquets ont été transmis à la carte réseau. Nous pouvons donc incrémenter le nombre de paquets au niveau de la fonction \textit{dev\_queue\_xmit()}, qui prend en compte l’interface de sortie.
 
 Il n’est pas possible d’écrire un code modulaire pour ce type de manipulation. Nous sommes contraints de modifier le code du noyau. Cela implique la compilation d’un nouveau noyau, tâche assez lourde. 
 
@@ -486,19 +489,26 @@ et redémarrer l'ordinateur.
 
 A chaque modification d'un des fichiers sources du noyau, il faut refaire le make et le make install.
 
-\subsubsection{Un premier essai dans dev\_queue\_xmit}
+\subsubsection{Un premier essai dans la fonction dev\_queue\_xmit()}
 En sortie, il existe une politique de gestion de files d'attente appelée qdisc. Il s'agit d'une structure 
 comportant deux pointeurs sur fonction enqueue et dequeue. Il existe une qdisc par interface de sortie.
 Nous avons donc cherché à connaître le contenu effectif en paquets TCP de la file d'attente.
-Il est clair que l'incrément du nombre de paquets TCP doit se faire au début du corps de la fonction \textit{dev\_queue\_xmit}
+Il est clair que l'incrément du nombre de paquets TCP doit se faire au début du corps de la fonction \textit{dev\_queue\_xmit()}
 quand un appel à la fonction pointée par enqueue est fait. En revanche, nous avons vu que la fonction 
-\textit{hard\_start\_xmit} est implémentée au niveau des drivers. Cela implique que l'implémentation de la fonction 
+\textit{hard\_start\_xmit()} est implémentée au niveau des drivers. Cela implique que l'implémentation de la fonction 
 diffère selon la carte réseau. Pour pallier ce problème, nous voulons décrémenter le nombre de paquets à un 
 niveau supérieur : par exemple au niveau de l'appel à la fonction pointée par dequeue.
 Cependant, le paquet peut très bien êtredépilé de \textit{qdisc}, mais ne pas
 être envoyé. Il est donc impératif de se placer à un niveau inférieur.
 
 \subsubsection{Wrapper pour les drivers ethernet (npkt--)}
+
+Comme on l'a dit précédemment, à chaque fois que la fonction \textit{dev\_queue\_xmit()} est appelée, un paquet est mis en
+bufferisation. Nous avons vu que le décrément au niveau du pointeur de fonction \textit{dequeue} ne fonctionnait pas. Par 
+conséquent, nous avons cherché une fonction mettant le paquet dans la file d'attente de la carte réseau.
+
+Transition ?
+
 Les fonctions permettant de manipuler une carte ethernet sont sous
 linux abstraite par une structure : ajouter un driver revient donc
 à déclarer une structure et à remplir les différents champs, avec
@@ -516,7 +526,7 @@ struct net_device_ops {
 };
 \end{verbatim}
 
-Et un driver, par exemple e1000, l'utilise ainsi:
+Et un driver, par exemple le driver e1000\footnote{Driver très répandu, utilisé par la carte Intel. Il est présent notamment sur VirtualBox.}, l'utilise ainsi:
 \begin{verbatim}
 static const struct net_device_ops e1000_netdev_ops = {
     .ndo_open               = e1000_open,
@@ -527,12 +537,12 @@ static const struct net_device_ops e1000_netdev_ops = {
 };
 \end{verbatim}
 
-La fonction \textit{dev\_hard\_start\_xmit}, située dans
+La fonction \textit{dev\_hard\_start\_xmit()}, située dans
 \textit{net/core/dev.c}, est chargée de transmettre le paquet
 à la carte. Après quelques tests à l'aide de \textit{printk} bien
 placé, nous avons constaté que dans tous les cas, la fonction
 est appellée, plus ou moins directement, et qu'elle contient 
-un appel à \textit{ndo\_start\_xmit} qui lancera la transmission réelle des paquets. La décrementation de la
+un appel à \textit{ndo\_start\_xmit()} qui lancera la transmission réelle des paquets. La décrementation de la
 taille de la pile peut donc être effectuée ici, plutôt que de
 l'être dans le noyau.
 
@@ -541,7 +551,7 @@ En réglant la vitesse et la taille du buffer avec tc, on peut observer
 une augmentation de qsize : les paquets rentrent, mais ne sortent jamais.
 L'hypothèse que nous avons par la suite vérifiée est que ces paquets
 sont droppés par la carte : en regardant la valeur de retour (\textit{rc}) à
-la  fin de \textit{dev\_queue\_xmit}, on voit bien  qu'elle est à
+la  fin de \textit{dev\_queue\_xmit()}, on voit bien  qu'elle est à
 \textit{NET\_XMIT\_DROP} à chaque fois que qsize n'est pas décrémenté
 en sortie:
 \begin{figure}[!ht]
