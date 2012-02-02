@@ -383,8 +383,10 @@ en sortie d’une interface donnée.
   # tc qdisc add dev eth2 parent 1: handle 10: netem delay 3ms
 \end{verbatim}
 Pour limiter la bande passante, on utilise un Token Bucket Filter
-(tbf) en précisant qu’on ne peut pas dépasser un débit de
+(tbf) en précisant qu'on ne peut pas dépasser un débit de
 $10$Mbits/seconde.
+Dans la pratique, la capacité des interface (C) est passée
+en paramètre au chargement du module.
 
 Après avoir ainsi configuré la vitesse maximale,
 nous nous attendons à obtenir une file d’attente non nulle.
@@ -410,26 +412,29 @@ obtenir les statistiques.
 
 \subsection{Lecture des statistiques sur les cartes réseaux}
 Grâce à une fonction du noyau, il est possible d’accéder à des
-statistiques concernant les interfaces. La fonction \textit{dev\_get\_stats}
+statistiques concernant les interfaces. La fonction \textit{dev\_get\_stats()}
 définie dans \textit{linux/netdevice.h} fournit :
 \begin{itemize}
 	\item le nombre de paquets (ou octets) reçus sur une interface;
 	\item le nombre de paquets (ou octets) transmis par une interface;
 	\item le nombre d’erreurs;
-	\item et le nombre de paquets “dropped”.
+	\item et le nombre de paquets \og dropped \fg.
 \end{itemize}
 
 Ces statistiques pourraient nous aider à calculer Qsize. 
-Effectivement, pour une interface de sortie donnée on connaît le nombree de paquets transmis par cette interface.
-Il faut se placer maintenant sur chacune des autres interfaces, et comptabiliser le nombre de paquets entrants à destination
-de notre interface de sortie. Cela est possible à condition d'effectuer un routage des paquets pour connaître leur destination.
+Effectivement, pour une interface de sortie donnée on connaît le
+nombre de paquets transmis par cette interface.
+Il faut se placer maintenant sur chacune des autres interfaces, et
+comptabiliser le nombre de paquets entrants à destination
+de notre interface de sortie. Cela est possible à condition
+d'effectuer un routage des paquets pour connaître leur destination.
 
-Cependant,
-les statistiques sur les cartes réseaux ne permettent pas de différencier les paquets TCP des autres paquets. De plus, le routage évoqué
+Cependant, les statistiques sur les cartes réseaux ne permettent pas de
+différencier les paquets TCP des autres paquets, il faudrait
+donc compter ceux-ci séparemment. De plus, le routage évoqué
 est assez lourd. Il nous faut donc aller un peu plus loin dans le code.
 
-\section{Analyse de la file d'attente au niveau de couche Liaison
-}
+\section{Analyse de la file d'attente au niveau de couche Liaison}
 
 Après tous les tests que nous avons effectué précédemment, nous pouvons affirmer
  que la file d'attente contenant les paquets qui n'ont pas encore été traités ne
@@ -440,17 +445,20 @@ Après tous les tests que nous avons effectué précédemment, nous pouvons affi
 
 Schéma !
 
-\subsection{Les files d'attente en entrée}
+\subsection{Les files d'attente avant routage}
 Comme on peut le voir sur ce schéma issu de nos recherches, à la reception des paquets, ces derniers sont stockés dans une file d'attente appelée backlog \cite{10poin} ou ingress queue, dans la couche Liaison. Il en existe une par processeur. 
 Lorsqu'un paquet entre, une interruption appelée \textit{NET\_RX\_SOFTIRQ} est levée. On peut choisir de traiter cette interruption grâce à un handler qui est une fonction appelée automatiquement lorsque l'interruption est levée. Nous avons donc essayer d'incrémenter le nombre de paquets dans ce handler et de continuer à le décrémenter  dans le hook \textit{NF\_IP\_POST\_ROUTING}. Malheureusement, le traitement des interruptions est avéré être plus compliqué que ce que nous pensions. Et nous n'avons pas voulu perdre de temps sur ce point puisque nos recherches nous ont appris que dans le cadre d'un routeur ERN, seul le taux d'occupation de la file d'attente entre en jeu. De telles files ne nous intéressent donc pas. 
 
-\subsection{Les files d'attente en sortie}
+\subsection{Les files d'attente après routage}
 
 \subsubsection{File d'attente entre les fonctions dev\_queue\_xmit() et hard\_start\_xmit()}
 
 Après le passage dans les hooks Netfilter, le paquet traverse la couche Liaison \cite{intel} \cite{stack}. A ce niveau, il y a une mise en file d’émission pour chaque interface de sortie. Cette file d’émission existe entre la fonction noyau \textit{dev\_queue\_xmit()} et la fonction \textit{hard\_start\_xmit()}. La première fonction empile le paquet lorsqu’il passe de la couche Réseau à la couche Liaison. La deuxième fonction a pour but d’indiquer au noyau que les paquets ont été transmis à la carte réseau. Nous pouvons donc incrémenter le nombre de paquets au niveau de la fonction \textit{dev\_queue\_xmit()}, qui prend en compte l’interface de sortie.
 
-Il n’est pas possible d’écrire un code modulaire pour ce type de manipulation. Nous sommes contraints de modifier le code du noyau. Cela implique la compilation d’un nouveau noyau, tâche assez lourde. 
+Il n’est pas possible d’écrire un code modulaire pour ce type de manipulation.
+Nous sommes contraints de modifier le code du noyau. Cela implique la compilation
+d'un nouveau noyau, tâche assez lourde, et peu pratique : un module a le gros
+avantage de ne pas être dépendant des sources du noyau.
 
 \subsubsection{La compilation du noyau Linux}
 
@@ -469,51 +477,64 @@ cela nous a permis de récupérer le fichier de configuration et la compilation 
 Après avoir téléchargé le noyau, il y a plusieurs étapes pour le compiler. 
 Le téléchargement nous procure un fichier compressé, il faut donc le décompresser :
 \begin{verbatim}
-# tar xvjf linux-2.6.32.tar.bz2
+  # tar xvjf linux-2.6.32.tar.bz2
 \end{verbatim}
 Une fois la décompression effectuée, il faut placer le fichier de configuration trouvé dans /boot dans le dossier contenant le noyau et le renommer en .config.
+\begin{verbatim}
+  # cp /boot/config-2.6.32 .config
+\end{verbatim}
 Ensuite, il faut créer l'image binaire du noyau qui servira pour booter sur notre nouveau noyau :
 \begin{verbatim}
-# make bzImage
+  # make bzImage
 \end{verbatim}
 Les modules, qui comprennent notamment les pilotes utiles pour l'utilisation du clavier et de la souris par exemple, peuvent être compilés et installés :
 \begin{verbatim}
-# make modules
-# make modules_install
+  # make modules
+  # make modules_install
 \end{verbatim}
 Enfin, on peut compiler et installer le noyau lui-même :
 \begin{verbatim}
-# make
-# make install
+  # make
+  # make install
 \end{verbatim}
 Pour pouvoir booter sur ce noyau ainsi installé, il faut taper la commande :
 \begin{verbatim}
-# update-grub
+  # update-grub
 \end{verbatim}
 et redémarrer l'ordinateur.
 
 A chaque modification d'un des fichiers sources du noyau, il faut refaire le make et le make install.
 
 \subsubsection{Un premier essai dans la fonction dev\_queue\_xmit()}
-En sortie, il existe une politique de gestion de files d'attente appelée qdisc. Il s'agit d'une structure 
-comportant deux pointeurs sur fonction enqueue et dequeue. Il existe une qdisc par interface de sortie.
-Nous avons donc cherché à connaître le contenu effectif en paquets TCP de la file d'attente.
-Il est clair que l'incrément du nombre de paquets TCP doit se faire au début du corps de la fonction \textit{dev\_queue\_xmit()}
-quand un appel à la fonction pointée par enqueue est fait. En revanche, nous avons vu que la fonction 
-\textit{hard\_start\_xmit()} est implémentée au niveau des drivers. Cela implique que l'implémentation de la fonction 
-diffère selon la carte réseau. Pour pallier ce problème, nous voulons décrémenter le nombre de paquets à un 
-niveau supérieur : par exemple au niveau de l'appel à la fonction pointée par dequeue.
-Cependant, le paquet peut très bien êtredépilé de \textit{qdisc}, mais ne pas
+En sortie, il existe une politique de gestion de files d'attente appelée qdisc.
+Il s'agit d'une structure  comportant entre autre deux pointeurs sur fonction
+enqueue et dequeue. Il existe une qdisc par interface de sortie.
+
+Nous avons donc cherché à connaître le contenu effectif en paquets TCP de
+la file d'attente. Il est clair que l'incrément du nombre de paquets TCP
+doit se faire au début du corps de la fonction \textit{dev\_queue\_xmit()}
+quand un appel à la fonction pointée par \textit{enqueue} est fait. Nous
+avons aussi vu que la fonction \textit{dequeue} est appellée indirectement
+par \textit{dev\_hard\_start\_xmit()} 
+Cependant, le paquet peut très bien être dépilé de \textit{qdisc}, mais ne pas
 être envoyé. Il est donc impératif de se placer à un niveau inférieur.
 
 \subsubsection{Un second essai en utilisant la fonction dev\_hard\_start\_xmit()}
 
-Comme on l'a dit précédemment, à chaque fois que la fonction \textit{dev\_queue\_xmit()} est appelée, un paquet est mis en
-bufferisation. Nous avons vu que le décrément au niveau du pointeur de fonction \textit{dequeue} ne fonctionnait pas. Par 
-conséquent, nous avons cherché une fonction mettant le paquet dans la file d'attente de la carte réseau. Il s'agit
-de la fonction \textit{ndo\_start\_xmit()} appelée dans \textit{dev\_hard\_start\_xmit()}. 
+Comme on l'a dit précédemment, à chaque fois que la fonction \textit{dev\_queue\_xmit()}
+est appelée, un paquet est mis en bufferisation. Nous avons vu que le décrément au
+niveau du pointeur de fonction \textit{dequeue} ne fonctionnait pas : en fait,
+le paquet est dépilé à la sortie de la couche transport, alors que la décrémentation
+devrait plutôt être réalisée une fois le paquet mis sur le réseau. Par 
+conséquent, nous avons cherché une fonction mettant le paquet dans la file
+d'attente de la carte réseau. Il s'agit de la fonction \textit{ndo\_start\_xmit()}
+appelée dans \textit{dev\_hard\_start\_xmit()}. 
 
-Transition ?
+En fait, chaque driver implémente une fonction permettant l'envoie de
+paquet sur le réseau. Une solution naive consisterait à chercher le
+code du bon driver, et d'y placer la décrémentation. Mais alors le
+code ne fonctionnerait plus qu'avec un seul driver, à moins de tous
+les modifier.
 
 Les fonctions permettant de manipuler une carte Ethernet sont sous
 linux abstraite par une structure : ajouter un driver revient donc
@@ -532,7 +553,9 @@ struct net_device_ops {
 };
 \end{verbatim}
 
-Et un driver, par exemple le driver e1000\footnote{Driver très répandu, utilisé par la carte Intel. Il est présent notamment sur VirtualBox.}, l'utilise ainsi:
+Et un driver, par exemple le driver e1000\footnote{Driver très répandu,
+utilisé par la carte Intel. Il est présent notamment sur VirtualBox.},
+l'utilise ainsi:
 \begin{verbatim}
 static const struct net_device_ops e1000_netdev_ops = {
     .ndo_open               = e1000_open,
@@ -557,7 +580,8 @@ une augmentation de qsize : les paquets rentrent, mais ne sortent jamais.
 L'hypothèse que nous avons par la suite vérifiée est que ces paquets
 sont droppés par la carte : en regardant la valeur de retour (\textit{rc}) à
 la  fin de \textit{dev\_queue\_xmit()}, on voit bien  qu'elle est à
-\textit{NET\_XMIT\_DROP} à chaque fois que qsize n'est pas décrémenté
+\textit{NET\_XMIT\_DROP} au lieu de \textit{NET\_XMIT\_SUCCESS} à chaque
+fois que qsize n'est pas décrémenté
 en sortie:
 \begin{figure}[!ht]
 	\centering
@@ -565,8 +589,13 @@ en sortie:
 	\caption{\label{dropped} Après réglage avec tc(1)}
 \end{figure}
 
+On pourrait très bien décrémenter qsize à chaque paquet droppé : cela
+permettrait de réinitialiser le compteur plutôt que de le laisser
+grandir à chaque paquet non-envoyé, et cela resterait logique, dans le
+sens ou le paquet n'est plus dans la file d'attente.
+
 Sans effectuer de  réglages, les paquets ne sont pas droppés, et, selon
-des facteurs indeterminés (vitesse carte? TODO), nous observons soit un
+la configuration de la carte, nous observons soit un
 qsize toujours à 0, soit un qsize grandissant à l'occasion, mais se
 réduisant par la suite:
 \begin{figure}[!ht]
@@ -578,13 +607,101 @@ réduisant par la suite:
 \section{Conclusion}
 Durant ce projet, nous avons fourni une analyse de la taille de la file d'attente
 réelle instantanée au sein d'un routeur ERN. Pour y parvenir, nous avons exploré 
-différentes solutions avant d'aboutir à la solution finale utililsant la couche Liaison. 
+différentes solutions avant d'aboutir à la solution finale utilisant la couche Liaison. 
 Nos recherches nous ont fait appréhender un domaine jusqu'ici inconnu,
 celui de la recherche. Elles nous ont également permis de développer nos connaissances
 en réseau, en programmation en mode noyau et en virtualisation. 
 Nos résultats sont exploitables par les chercheurs. Néanmoins, une statistique telle que
 l'Input Traffic Rate devra être établie pour compléter le développement du framework
-de notre routeur.
+de notre routeur. Pour obtenir la vitesse, en sachant que l'on a déjà le nombre
+de paquets entrant, il faudrait utiliser un timer.
+
+\newpage
+\appendix
+
+\section{Compléments sur la programmation de modules Linux}
+\subsection{Organisation générale}
+Un module contient toujours deux fonctions respectivement executées
+au chargement et au déchargement du module:
+\begin{verbatim}
+int
+init_module(void)
+{
+    ...
+}
+
+void
+cleanup_module(void)
+{
+    ...
+}
+\end{verbatim}
+
+Les fonctions C \og classiques \fg\ ne sont plus disponibles, et
+des équivalents en mode noyau viennent les remplacer : par exemple,
+\textit{printf()} est remplacée par \textit{printk()}.
+
+\subsection{Mise en place d'un hook netfilter}
+Un hook pour netfilter est une fonction
+\begin{verbatim}
+unsigned int fun(unsigned int, struct sk_buff *, const struct net_device *,
+	const struct net_device *, int (*)(struct sk_buff *));
+\end{verbatim}
+
+Elle est appelée dans un contexte d'interruptions, à chaque
+fois qu'un paquet passe par le hook correspondant. Lui sont entre
+autre passé en arguments:
+\begin{description}
+	\item[struct sk\_buff *skb] le paquet;
+	\item[const struct net\_device *in, *out] les interfaces d'entrées/sorties;
+\end{description}
+
+Typiquement, l'enregistrement du module se fait dans la fonction
+\textit{init\_module()}:
+\begin{verbatim}
+static struct nf_hook_ops nfho;
+
+...
+
+int
+init_module(void)
+{
+    nfho.hook     = fun;             /* handler function */
+    nfho.hooknum  = NF_INET_FORWARD; /* emplacement du hook */
+    nfho.pf       = PF_INET;
+    nfho.priority = NF_IP_PRI_FIRST;   /* priorité */
+
+    nf_register_hook(&nfho);
+}
+\end{verbatim}
+
+et le déchargement dans \textit{cleanup\_module()}:
+\begin{verbatim}
+void cleanup_module()
+{
+    nf_unregister_hook(&nfho);
+}
+\end{verbatim}
+
+\subsection{Synchronisation (spinlock)}
+Les spinlocks sont un mécanisme de synchronisation utilisable
+dans un contexte d'interruption, comme c'est le cas pour les
+hooks netfilter. Nous nous sommes ici contenté de les utiliser
+comme des simples verrous, ce que le code suivant résume:
+
+\begin{verbatim}
+#include <linux/spinlock.h>
+static DEFINE_SPINLOCK(lock); 
+
+{
+    spin_lock_irq(&lock);    /* verouiller */
+    /* code protégé */
+    spin_unlock_irq(&lock);  /* dévérouiller */
+}
+\end{verbatim}
+
+D'autres mécanismes comme les sémaphores ou les mutex sont
+utilisables dans des cas moins particuliers.
 
 \newpage
 \bibliographystyle{ieeetr}
@@ -597,14 +714,5 @@ de notre routeur.
 	\item Source du noyau : http://lxr.linux.no/
 \end{itemize}
 
-
-\newpage
-\appendix
-
-\section{Compléments sur la programmation de modules Linux}
-\subsection{Organisation générale}
-\subsection{Mise en place d'un hook netfilter}
-\subsection{Synchronisation (spinlock)}
-\subsection{Compilation d'un noyau Linux}
 
 \end{document}

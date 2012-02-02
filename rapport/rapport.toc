@@ -10,17 +10,16 @@
 \contentsline {subsection}{\numberline {4.1}\textit {NF\_IP\_FORWARD} et \textit {NF\_IP\_POST\_ROUTING}}{7}
 \contentsline {subsection}{\numberline {4.2}\textit {NF\_IP\_PRE\_ROUTING} et \textit {NF\_IP\_POST\_ROUTING}}{7}
 \contentsline {subsection}{\numberline {4.3}Lecture des statistiques sur les cartes r\IeC {\'e}seaux}{8}
-\contentsline {section}{\numberline {5}Analyse de la file d'attente au niveau de couche Liaison }{8}
-\contentsline {subsection}{\numberline {5.1}Les files d'attente en entr\IeC {\'e}e}{8}
-\contentsline {subsection}{\numberline {5.2}Les files d'attente en sortie}{8}
+\contentsline {section}{\numberline {5}Analyse de la file d'attente au niveau de couche Liaison}{8}
+\contentsline {subsection}{\numberline {5.1}Les files d'attente avant routage}{8}
+\contentsline {subsection}{\numberline {5.2}Les files d'attente apr\IeC {\`e}s routage}{8}
 \contentsline {subsubsection}{\numberline {5.2.1}File d'attente entre les fonctions dev\_queue\_xmit() et hard\_start\_xmit()}{8}
 \contentsline {subsubsection}{\numberline {5.2.2}La compilation du noyau Linux}{9}
 \contentsline {subsubsection}{\numberline {5.2.3}Un premier essai dans la fonction dev\_queue\_xmit()}{9}
-\contentsline {subsubsection}{\numberline {5.2.4}Un second essai en utilisant la fonction dev\_hard\_start\_xmit()}{9}
+\contentsline {subsubsection}{\numberline {5.2.4}Un second essai en utilisant la fonction dev\_hard\_start\_xmit()}{10}
 \contentsline {section}{\numberline {6}R\IeC {\'e}sultats}{10}
-\contentsline {section}{\numberline {7}Conclusion}{10}
+\contentsline {section}{\numberline {7}Conclusion}{11}
 \contentsline {section}{\numberline {A}Compl\IeC {\'e}ments sur la programmation de modules Linux}{13}
 \contentsline {subsection}{\numberline {A.1}Organisation g\IeC {\'e}n\IeC {\'e}rale}{13}
 \contentsline {subsection}{\numberline {A.2}Mise en place d'un hook netfilter}{13}
-\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{13}
-\contentsline {subsection}{\numberline {A.4}Compilation d'un noyau Linux}{13}
+\contentsline {subsection}{\numberline {A.3}Synchronisation (spinlock)}{14}
