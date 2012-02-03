@@ -1,0 +1,115 @@
+--- /usr/src/linux/net/core/dev.c.orig	2012-02-03 10:57:27.000000000 +0100
++++ /usr/src/linux/net/core/dev.c	2012-02-03 10:59:16.000000000 +0100
+@@ -135,6 +135,13 @@
+ 
+ #include "net-sysfs.h"
+ 
++#include <linux/spinlock.h>
++
++static DEFINE_SPINLOCK(lock);
++
++static int npkt = 0;
++
++
+ /* Instead of increasing this, you should create a hash table. */
+ #define MAX_GRO_SKBS 8
+ 
+@@ -2001,6 +2008,7 @@
+ {
+ 	const struct net_device_ops *ops = dev->netdev_ops;
+ 	int rc = NETDEV_TX_OK;
++	struct iphdr *iph;
+ 
+ 	if (likely(!skb->next)) {
+ 		if (!list_empty(&ptype_all))
+@@ -2047,10 +2055,22 @@
+ 			}
+ 		}
+ 
++		printk(KERN_CRIT "\t (NON GSO)\n");
+ 		rc = ops->ndo_start_xmit(skb, dev);
+ 		trace_net_dev_xmit(skb, rc);
+-		if (rc == NETDEV_TX_OK)
++		if (rc == NETDEV_TX_OK) {
++			iph = (struct iphdr *)skb_network_header(skb);
++			if (iph->protocol == 6) {
++				spin_lock_irq(&lock);
++				printk(KERN_CRIT "OUT: %d\n", npkt--);
++				spin_unlock_irq(&lock);
++			}
++			printk(KERN_CRIT "\t\ttransmission ok!\n");
+ 			txq_trans_update(txq);
++		}	
++		else {
++			printk(KERN_CRIT "rc: %d\n", rc);
++		}
+ 		return rc;
+ 	}
+ 
+@@ -2068,9 +2088,11 @@
+ 		if (dev->priv_flags & IFF_XMIT_DST_RELEASE)
+ 			skb_dst_drop(nskb);
+ 
++		printk(KERN_CRIT "\t (GSO)\n");
+ 		rc = ops->ndo_start_xmit(nskb, dev);
+ 		trace_net_dev_xmit(nskb, rc);
+ 		if (unlikely(rc != NETDEV_TX_OK)) {
++			printk(KERN_CRIT "\t\ttransmission ok!\n");
+ 			if (rc & ~NETDEV_TX_MASK)
+ 				goto out_kfree_gso_skb;
+ 			nskb->next = skb->next;
+@@ -2250,6 +2272,7 @@
+ 	struct netdev_queue *txq;
+ 	struct Qdisc *q;
+ 	int rc = -ENOMEM;
++	struct iphdr *iph;
+ 
+ 	/* Disable soft irqs for various locks below. Also
+ 	 * stops preemption for RCU.
+@@ -2262,8 +2285,17 @@
+ #ifdef CONFIG_NET_CLS_ACT
+ 	skb->tc_verd = SET_TC_AT(skb->tc_verd, AT_EGRESS);
+ #endif
++
++	iph = (struct iphdr *)skb_network_header(skb);
++	if (iph->protocol == 6) {
++		spin_lock_irq(&lock);
++		printk(KERN_CRIT "IN %d\n", npkt++);
++		spin_unlock_irq(&lock);
++	}
++
+ 	trace_net_dev_queue(skb);
+ 	if (q->enqueue) {
++		printk(KERN_CRIT "device has queue! __dev_xmit_skb()");
+ 		rc = __dev_xmit_skb(skb, q, dev, txq);
+ 		goto out;
+ 	}
+@@ -2281,6 +2313,7 @@
+ 	   Either shot noqueue qdisc, it is even simpler 8)
+ 	 */
+ 	if (dev->flags & IFF_UP) {
++		printk(KERN_CRIT "device has no queue!");
+ 		int cpu = smp_processor_id(); /* ok because BHs are off */
+ 
+ 		if (txq->xmit_lock_owner != cpu) {
+@@ -2292,6 +2325,7 @@
+ 
+ 			if (!netif_tx_queue_stopped(txq)) {
+ 				__this_cpu_inc(xmit_recursion);
++				printk(KERN_CRIT "\tcalling dev_hard_start_xmit()\n");
+ 				rc = dev_hard_start_xmit(skb, dev, txq);
+ 				__this_cpu_dec(xmit_recursion);
+ 				if (dev_xmit_complete(rc)) {
+@@ -2320,6 +2354,12 @@
+ 	kfree_skb(skb);
+ 	return rc;
+ out:
++	if (rc == NET_XMIT_DROP) {
++		printk(KERN_CRIT "packet dropped!\n");
++	}
++	if (rc < 0) {
++		printk(KERN_CRIT "rc < 0 in dev_queue_xmit");
++	}
+ 	rcu_read_unlock_bh();
+ 	return rc;
+ }
