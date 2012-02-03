@@ -1,0 +1,134 @@
+Général :
+	cartes réseau[x] => cartes réseau (en tout cas, choisir une écriture)
+	(pareil pour "interfaces réseau(x)")
+	(et pour "interfaces d'entrée[s]/sortie[s]")
+	(et "un contexte d'interruption[s]")
+
+	Environnement de test[s]
+
+	Ponctuation (virgules, point-virgules)
+
+	Phrases qui commencent par "Et..."
+
+	qsize / Qsize
+
+	netfilter / Netfilter
+
+I Introduction :
+	augmentation du traFic
+
+	Une famille -> Ils... // et "est l'ERN" [Une famille de protocoles de contrôle de congestion
+	est celle des ERN. Ces protocoles reposent...]
+
+	établiera -> établira
+	Puis[,] dans un second temps...
+	oeuvre : e dans l'o
+
+II Description du problème
+	management de mémoire => gestion de la mémoire
+	(Output Packets, O) après "par cette interface"
+	Figure 1 => Tableau 1
+	La quantité de donnéeS
+	Input [T]raf[f]ic Rate / Output [T]raf[f]ic Rate
+	évènement -> événement
+	A chaque hook -> À chaque hook (accent)
+	débarasser -> débar[r]asser
+	le troisième hook, NF_IP_FORWARD[,] puis le quatrième, NF_IP_POST_ROUTING...
+	"créés par le routeur [lui-même. Ils] passent..."
+	"bibliothèques" ? A voir...
+	Point d'interrogation à la fin du paragraphe ?
+
+III Environnement de tests
+3.1)
+	récépteur => récepteur
+	Figure 4 => Tableau 4
+	"peut atteindre le routeur *directement*"
+3.2)
+	récépteur => récepteur (5 fois)
+	La capture d'écran du ping n'est pas au bon endroit
+	peut-être => peut être
+	(hping3 ?)
+
+IV Calcul de la taille de la file d'attente avec Netfilter
+	A présent => À présent
+	input trafic rate => Input Packets // output trafic rate => Output Packets
+	"taille de la pile" => "taille de la file"
+4.1)
+	"...on constate que Qsize [...] sont constamment *égaux* à zéro" => Qsize est constamment égale
+	"la capacité des interface[S]"
+	La figure 7 est mal placée ou/et il manque un point après "... d'iperf en figure 7"
+	"...les paquets TCP des autres [paquets. Il] faudrait..."
+	séparemment => séparément
+
+V Analyse de la file d'attente au niveau de couche Liaison
+	Dans le titre : "de [LA] couche Liaison"
+	"tous les tests que nous avons effectuéS précedemment"
+	répétition de "du modèle OSI"
+	(schéma à mettre)
+5.1)
+	reception => réception
+	"Il en existe une par processeur" : Dino nous a dit de supprimer ça
+	"Nous avons donc essayer" => "Nous avons donc essayé"
+	"le traitement des interruptions [s']est avéré]"
+5.2.1)
+	A ce niveau => À ce niveau
+5.2.2)
+	Nous avons télécharger => Nous avons téléchargé
+
+	"inutilisable" => "inutilisables" je pense (les deux sont corrects, cf.
+	http://www.languefrancaise.net/forum/viewtopic.php?id=100 mais le 2ème
+	est moins bizarre)
+
+	"d'avantage" => "davantage"
+
+	A chaque modification => À chaque modification
+
+5.2.3)
+	"appellée" => "appelée" (2 fois)
+
+	"par dev_hard_start_xmit()[.] Cependant"
+
+5.2.4)
+	l'envoi[e] de paquet[] => l'envoi[] de paquet[s]
+	
+	naive => naïve
+
+	"consisterait *à* chercher [...] et *[à]* y placer"
+
+	"Les fonctions [...] sont[,] sous [L]inux, abstraite[s]..."
+
+	"remplir les différents champs[] avec..."
+	"La structure net_device, déclarée dans linux/netdevice.h[,] joue ce rôle"
+
+	"La décrementation" => "La décr[é]mentation"
+
+	"la pile" => "la file"
+
+	"dans le sens o[u] le paquet" => "dans le sens o[ù] le paquet"
+
+	"nombre de paquets entrant[]" => "nombre de paquets entrant[s]"
+
+
+A ...
+A.1 Organisation générale
+	ex[e]cutées => ex[é]cutées
+
+	`modprobe` pour charger et `modprobe -r` pour décharger
+
+A.2
+	"Lui sont entre autre[] passé[] en arguments" => "Lui sont entre autre[s] passé[s] en arguments"
+	(mais pas beau de toute façon)
+
+	
+A.3
+	"Nous nous sommes ici contenté[s]"
+
+	"comme de[s] simples verrous" => "comme de simples verrous" je pense
+
+A.4
+	Certaines lignes du code du module sont tronquées => retour à la ligne
+
+	Il n'y a aucune indentation
+
+A.5
+	À compléter
