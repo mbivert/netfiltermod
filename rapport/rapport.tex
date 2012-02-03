@@ -590,7 +590,7 @@ fois que Qsize n'est pas décrémenté
 en sortie:
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[scale=.5]{dropped.png}
+	\includegraphics[scale=.5]{npkt_f_t_dropped.png}
 	\caption{\label{dropped} Après réglage avec tc(1)}
 \end{figure}
 
@@ -605,7 +605,7 @@ Qsize toujours à 0, soit un Qsize grandissant à l'occasion, mais se
 réduisant par la suite:
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[scale=.5]{qsize_default.png}
+	\includegraphics[scale=.5]{npkt_f_t.png}
 	\caption{\label{qsize_default} Sans réglage}
 \end{figure}
 
@@ -769,159 +769,159 @@ struct iphdr *ip_header;
 struct tcphdr *tcp_header;
 
 inline int hash_index(const char* name_intf) { 
-	return name_intf[strlen(name_intf) - 1] - '0'; 
+    return name_intf[strlen(name_intf) - 1] - '0'; 
 }
 
 /* Hook function: FORWARD */
 unsigned int hook_func_forward(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
 
-	int index;
-	sock_buff = skb; // Ok, useless but ...
-	
-	if (!sock_buff) { 
-		return NF_ACCEPT; 
-	}
-	ip_header = (struct iphdr *) skb_network_header (sock_buff);
-	if (!ip_header) { 
-		return NF_ACCEPT; 
-	}
-	if (ip_header->protocol != 6) { 
-		return NF_ACCEPT; 
-	}
-	tcp_header = (struct tcphdr *) skb_transport_header (sock_buff);
-	if (!tcp_header) { return NF_ACCEPT; }
-	
-	return NF_ACCEPT;
+    int index;
+    sock_buff = skb; // Ok, useless but ...
+    
+    if (!sock_buff) { 
+        return NF_ACCEPT; 
+    }
+    ip_header = (struct iphdr *) skb_network_header (sock_buff);
+    if (!ip_header) { 
+        return NF_ACCEPT; 
+    }
+    if (ip_header->protocol != 6) { 
+        return NF_ACCEPT; 
+    }
+    tcp_header = (struct tcphdr *) skb_transport_header (sock_buff);
+    if (!tcp_header) { return NF_ACCEPT; }
+    
+    return NF_ACCEPT;
 }
 
 /* Hook function: POST */
 unsigned int hook_func_post(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
 
-	int index;
-	sock_buff = skb; // Ok, useless but ...
-	
-	if (!sock_buff) { 
-		return NF_ACCEPT; }
-	ip_header = (struct iphdr *) skb_network_header (sock_buff);
-	if (!ip_header) { 
-		return NF_ACCEPT; 
-	}
-	if (ip_header->protocol != 6) { 
-		return NF_ACCEPT; 
-	}
-	tcp_header = (struct tcphdr *) skb_transport_header (sock_buff);
-	if (!tcp_header) { 
-		return NF_ACCEPT; 
-	}
-	
-	printk(KERN_CRIT "POST");
-	printk(KERN_CRIT "PostIn: %s | PostOut: %s", in->name, out->name);
+    int index;
+    sock_buff = skb; // Ok, useless but ...
+    
+    if (!sock_buff) { 
+        return NF_ACCEPT; }
+    ip_header = (struct iphdr *) skb_network_header (sock_buff);
+    if (!ip_header) { 
+        return NF_ACCEPT; 
+    }
+    if (ip_header->protocol != 6) { 
+        return NF_ACCEPT; 
+    }
+    tcp_header = (struct tcphdr *) skb_transport_header (sock_buff);
+    if (!tcp_header) { 
+        return NF_ACCEPT; 
+    }
+    
+    printk(KERN_CRIT "POST");
+    printk(KERN_CRIT "PostIn: %s | PostOut: %s", in->name, out->name);
 
-	index = hash_index(out->name);
+    index = hash_index(out->name);
 
-	spin_lock_irq(&lock);
-	stats_packets[index][1]++; // O++
-	stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
-	printk(KERN_CRIT "OutPkt: %d\n", stats_packets[index][1]);
-	printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
-	spin_unlock_irq(&lock);
+    spin_lock_irq(&lock);
+    stats_packets[index][1]++; // O++
+    stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
+    printk(KERN_CRIT "OutPkt: %d\n", stats_packets[index][1]);
+    printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
+    spin_unlock_irq(&lock);
 
-	return NF_ACCEPT;
+    return NF_ACCEPT;
 }
 
 /* Hook function: PRE */
 unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
 
-	int rc = 51;
-	int index = 42;
-	__be32 src, dst;
-	u8 tos;
+    int rc = 51;
+    int index = 42;
+    __be32 src, dst;
+    u8 tos;
 
-	// Ok, useless but ...
-	sock_buff = skb;
-	
-	if (!sock_buff) { 
-		return NF_ACCEPT; 
-	}
-	ip_header = (struct iphdr *) skb_network_header (sock_buff);
-	if (!(ip_header)) { 
-		return NF_ACCEPT; 
-	}
-	if (ip_header->protocol != 6) { 
-		return NF_ACCEPT; 
-	}
-	tcp_header = (struct tcphdr *) skb_transport_header (sock_buff);
-	if (!tcp_header) { 
-		return NF_ACCEPT; 
-	}
-	
-	printk(KERN_CRIT "\nPRE");
-	printk(KERN_CRIT "PreIn: %s | PreOut: %s", in->name, out->name);
+    // Ok, useless but ...
+    sock_buff = skb;
+    
+    if (!sock_buff) { 
+        return NF_ACCEPT; 
+    }
+    ip_header = (struct iphdr *) skb_network_header (sock_buff);
+    if (!(ip_header)) { 
+        return NF_ACCEPT; 
+    }
+    if (ip_header->protocol != 6) { 
+        return NF_ACCEPT; 
+    }
+    tcp_header = (struct tcphdr *) skb_transport_header (sock_buff);
+    if (!tcp_header) { 
+        return NF_ACCEPT; 
+    }
+    
+    printk(KERN_CRIT "\nPRE");
+    printk(KERN_CRIT "PreIn: %s | PreOut: %s", in->name, out->name);
 
-	// Tests routage propre
-	src = ip_header->saddr;
-	dst = ip_header->daddr;
-	tos = ip_header->tos;
-	rc = ip_route_input(skb, dst, src, tos, in);
-	printk(KERN_CRIT "Route: %d", rc);
+    // Tests routage propre
+    src = ip_header->saddr;
+    dst = ip_header->daddr;
+    tos = ip_header->tos;
+    rc = ip_route_input(skb, dst, src, tos, in);
+    printk(KERN_CRIT "Route: %d", rc);
 
-	if (ip_header->daddr == 29935816) { // Target: 200.200.200.1 via eth2
-		index = hash_index("eth2");
-	} else if (ip_header->daddr == 23356516) { // Target: 100.100.100.1 via eth1
-		index = hash_index("eth1");
-	}
-	if (index == 42) {
-		return NF_ACCEPT;
-	}
-	
-	spin_lock_irq(&lock);
-	stats_packets[index][0]++;
-	//stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
-	printk(KERN_CRIT "InputPkts: %d\n", stats_packets[index][0]);
-	//printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
-	spin_unlock_irq(&lock);
+    if (ip_header->daddr == 29935816) { // Target: 200.200.200.1 via eth2
+        index = hash_index("eth2");
+    } else if (ip_header->daddr == 23356516) { // Target: 100.100.100.1 via eth1
+        index = hash_index("eth1");
+    }
+    if (index == 42) {
+        return NF_ACCEPT;
+    }
+    
+    spin_lock_irq(&lock);
+    stats_packets[index][0]++;
+    //stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
+    printk(KERN_CRIT "InputPkts: %d\n", stats_packets[index][0]);
+    //printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
+    spin_unlock_irq(&lock);
 
-	return NF_ACCEPT;
+    return NF_ACCEPT;
 }
 
 /* Initialisation routine */
 int init_module()
 {
 
-	/* Fill in our hook structure */
-	nfho_forward.hook     = hook_func_forward;         /* Handler function */
-	nfho_forward.hooknum  = NF_INET_FORWARD; /* NF_IP_FORWARD */
-	nfho_forward.pf       = PF_INET;
-	nfho_forward.priority = NF_IP_PRI_FIRST;   /* Make our function first */
+    /* Fill in our hook structure */
+    nfho_forward.hook     = hook_func_forward;         /* Handler function */
+    nfho_forward.hooknum  = NF_INET_FORWARD; /* NF_IP_FORWARD */
+    nfho_forward.pf       = PF_INET;
+    nfho_forward.priority = NF_IP_PRI_FIRST;   /* Make our function first */
 
-	/* Fill in our hook structure */
-	nfho_post.hook     = hook_func_post;         /* Handler function */
-	nfho_post.hooknum  = NF_INET_POST_ROUTING; /* NF_IP_FORWARD */
-	nfho_post.pf       = PF_INET;
-	nfho_post.priority = NF_IP_PRI_FIRST;   /* Make our function first */
+    /* Fill in our hook structure */
+    nfho_post.hook     = hook_func_post;         /* Handler function */
+    nfho_post.hooknum  = NF_INET_POST_ROUTING; /* NF_IP_FORWARD */
+    nfho_post.pf       = PF_INET;
+    nfho_post.priority = NF_IP_PRI_FIRST;   /* Make our function first */
 
-	/* Fill in our hook structure */
-	nfho_pre.hook     = hook_func_pre;         /* Handler function */
-	nfho_pre.hooknum  = NF_INET_PRE_ROUTING; /* NF_IP_FORWARD */
-	nfho_pre.pf       = PF_INET;
-	nfho_pre.priority = NF_IP_PRI_FIRST;   /* Make our function first */
+    /* Fill in our hook structure */
+    nfho_pre.hook     = hook_func_pre;         /* Handler function */
+    nfho_pre.hooknum  = NF_INET_PRE_ROUTING; /* NF_IP_FORWARD */
+    nfho_pre.pf       = PF_INET;
+    nfho_pre.priority = NF_IP_PRI_FIRST;   /* Make our function first */
 
-	printk(KERN_CRIT "Go ahead\n");
-	nf_register_hook(&nfho_forward);
-	nf_register_hook(&nfho_post);
-	nf_register_hook(&nfho_pre);
+    printk(KERN_CRIT "Go ahead\n");
+    nf_register_hook(&nfho_forward);
+    nf_register_hook(&nfho_post);
+    nf_register_hook(&nfho_pre);
 
-	//stats_packets[1][1] = outputRate_eth1;
-	//stats_packets[2][1] = outputRate_eth2;
+    //stats_packets[1][1] = outputRate_eth1;
+    //stats_packets[2][1] = outputRate_eth2;
 
-	return 0;
+    return 0;
 }
 /* Cleanup routine */
 void cleanup_module()
 {
-	nf_unregister_hook(&nfho_forward);
-	nf_unregister_hook(&nfho_post);
-	nf_unregister_hook(&nfho_pre);
+    nf_unregister_hook(&nfho_forward);
+    nf_unregister_hook(&nfho_post);
+    nf_unregister_hook(&nfho_pre);
 }
 
 MODULE_LICENSE("GPL");
@@ -929,7 +929,123 @@ MODULE_LICENSE("GPL");
 \end{verbatim}
 
 \subsection{Fonctions modifiées du noyau}
-
+\begin{verbatim}
+--- /usr/src/linux/net/core/dev.c.orig    2012-02-03 10:57:27.000000000 +0100
++++ /usr/src/linux/net/core/dev.c    2012-02-03 10:59:16.000000000 +0100
+@@ -135,6 +135,13 @@
+ 
+ #include "net-sysfs.h"
+ 
++#include <linux/spinlock.h>
++
++static DEFINE_SPINLOCK(lock);
++
++static int npkt = 0;
++
++
+ /* Instead of increasing this, you should create a hash table. */
+ #define MAX_GRO_SKBS 8
+ 
+@@ -2001,6 +2008,7 @@
+ {
+     const struct net_device_ops *ops = dev->netdev_ops;
+     int rc = NETDEV_TX_OK;
++    struct iphdr *iph;
+ 
+     if (likely(!skb->next)) {
+         if (!list_empty(&ptype_all))
+@@ -2047,10 +2055,22 @@
+             }
+         }
+ 
++        printk(KERN_CRIT "\t (NON GSO)\n");
+         rc = ops->ndo_start_xmit(skb, dev);
+         trace_net_dev_xmit(skb, rc);
+-        if (rc == NETDEV_TX_OK)
++        if (rc == NETDEV_TX_OK) {
++            iph = (struct iphdr *)skb_network_header(skb);
++            if (iph->protocol == 6) {
++                spin_lock_irq(&lock);
++                printk(KERN_CRIT "OUT: %d\n", npkt--);
++                spin_unlock_irq(&lock);
++            }
++            printk(KERN_CRIT "\t\ttransmission ok!\n");
+             txq_trans_update(txq);
++        }    
++        else {
++            printk(KERN_CRIT "rc: %d\n", rc);
++        }
+         return rc;
+     }
+ 
+@@ -2068,9 +2088,11 @@
+         if (dev->priv_flags & IFF_XMIT_DST_RELEASE)
+             skb_dst_drop(nskb);
+ 
++        printk(KERN_CRIT "\t (GSO)\n");
+         rc = ops->ndo_start_xmit(nskb, dev);
+         trace_net_dev_xmit(nskb, rc);
+         if (unlikely(rc != NETDEV_TX_OK)) {
++            printk(KERN_CRIT "\t\ttransmission ok!\n");
+             if (rc & ~NETDEV_TX_MASK)
+                 goto out_kfree_gso_skb;
+             nskb->next = skb->next;
+@@ -2250,6 +2272,7 @@
+     struct netdev_queue *txq;
+     struct Qdisc *q;
+     int rc = -ENOMEM;
++    struct iphdr *iph;
+ 
+     /* Disable soft irqs for various locks below. Also
+      * stops preemption for RCU.
+@@ -2262,8 +2285,17 @@
+ #ifdef CONFIG_NET_CLS_ACT
+     skb->tc_verd = SET_TC_AT(skb->tc_verd, AT_EGRESS);
+ #endif
++
++    iph = (struct iphdr *)skb_network_header(skb);
++    if (iph->protocol == 6) {
++        spin_lock_irq(&lock);
++        printk(KERN_CRIT "IN %d\n", npkt++);
++        spin_unlock_irq(&lock);
++    }
++
+     trace_net_dev_queue(skb);
+     if (q->enqueue) {
++        printk(KERN_CRIT "device has queue! __dev_xmit_skb()");
+         rc = __dev_xmit_skb(skb, q, dev, txq);
+         goto out;
+     }
+@@ -2281,6 +2313,7 @@
+        Either shot noqueue qdisc, it is even simpler 8)
+      */
+     if (dev->flags & IFF_UP) {
++        printk(KERN_CRIT "device has no queue!");
+         int cpu = smp_processor_id(); /* ok because BHs are off */
+ 
+         if (txq->xmit_lock_owner != cpu) {
+@@ -2292,6 +2325,7 @@
+ 
+             if (!netif_tx_queue_stopped(txq)) {
+                 __this_cpu_inc(xmit_recursion);
++                printk(KERN_CRIT "\tcalling dev_hard_start_xmit()\n");
+                 rc = dev_hard_start_xmit(skb, dev, txq);
+                 __this_cpu_dec(xmit_recursion);
+                 if (dev_xmit_complete(rc)) {
+@@ -2320,6 +2354,12 @@
+     kfree_skb(skb);
+     return rc;
+ out:
++    if (rc == NET_XMIT_DROP) {
++        printk(KERN_CRIT "packet dropped!\n");
++    }
++    if (rc < 0) {
++        printk(KERN_CRIT "rc < 0 in dev_queue_xmit");
++    }
+     rcu_read_unlock_bh();
+     return rc;
+ }
+\end{verbatim}
 \newpage
 \bibliographystyle{ieeetr}
 \bibliography{docs}
