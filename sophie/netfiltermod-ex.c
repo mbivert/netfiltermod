@@ -1,5 +1,8 @@
-/* Sample code to install a Netfilter hook function that will
- * drop all incoming packets on an interface we specify */
+/* 
+	Netfilter module for computing Qsize 
+	Usage: insmod netfiltermod-ex.ko outputRate_eth1=1000 outputRate_eth2=1000
+	outputRate_eth1 represents Output Link Capacity of eth1.
+*/
 
 #ifndef __KERNEL__
         #define __KERNEL__
@@ -61,7 +64,6 @@ inline int hash_index(const char* name_intf) {
 /* Hook function: FORWARD */
 unsigned int hook_func_forward(unsigned int hooknum, struct sk_buff *skb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)) {
 
-	int index;
 	sock_buff = skb; // Ok, useless but ...
 	
 	if (!sock_buff) { 
@@ -144,12 +146,12 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 	printk(KERN_CRIT "\nPRE");
 	printk(KERN_CRIT "PreIn: %s | PreOut: %s", in->name, out->name);
 
-	// Tests routage propre
+	// Tests routage
 	src = ip_header->saddr;
 	dst = ip_header->daddr;
 	tos = ip_header->tos;
 	rc = ip_route_input(skb, dst, src, tos, in);
-	printk(KERN_CRIT "Route: %d", rc);
+	/* printk(KERN_CRIT "Route: %d", rc); */
 
 	if (ip_header->daddr == 29935816) { // Target: 200.200.200.1 via eth2
 		index = hash_index("eth2");
@@ -162,9 +164,7 @@ unsigned int hook_func_pre(unsigned int hooknum, struct sk_buff *skb, const stru
 	
 	spin_lock_irq(&lock);
 	stats_packets[index][0]++;
-	//stats_packets[index][2] = stats_packets[index][0] - stats_packets[index][1]; // qsize = I - O
 	printk(KERN_CRIT "InputPkts: %d\n", stats_packets[index][0]);
-	//printk(KERN_CRIT "Qsize: %d\n", stats_packets[index][2]);
 	spin_unlock_irq(&lock);
 
 	return NF_ACCEPT;
@@ -197,8 +197,8 @@ int init_module()
 	nf_register_hook(&nfho_post);
 	nf_register_hook(&nfho_pre);
 
-	//stats_packets[1][1] = outputRate_eth1;
-	//stats_packets[2][1] = outputRate_eth2;
+	stats_packets[1][3] = outputRate_eth1;
+	stats_packets[2][3] = outputRate_eth2;
 
 	return 0;
 }
