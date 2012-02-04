@@ -425,18 +425,17 @@ définie dans \textit{linux/netdevice.h} fournit :
 	\item et le nombre de paquets \og dropped \fg.
 \end{itemize}
 
-Ces statistiques pourraient nous aider à calculer Qsize.
+Ces statistiques pourraient nous aider à calculer Qsize. 
 Effectivement, pour une interface de sortie donnée on connaît le
 nombre de paquets transmis par cette interface.
-Il faut se placer maintenant sur chacune des autres interfaces, et
+Il faudrait se placer sur chacune des autres interfaces, et
 comptabiliser le nombre de paquets entrants à destination
-de notre interface de sortie. Cela est possible à condition
-d'effectuer un routage des paquets pour connaître leur destination.
+de notre interface de sortie en effectuant un routage du paquet.
 
 Cependant, les statistiques sur les cartes réseaux ne permettent pas de
 différencier les paquets TCP des autres paquets, il faudrait
-donc compter ceux-ci séparemment. De plus, le routage évoqué
-est assez lourd. Il nous faut donc aller un peu plus loin dans le code.
+donc compter ceux-ci séparemment. De plus, on ne peut pas router les paquets
+car on n'a pas accès la structure représentant le paquet. Il nous faut donc aller un peu plus loin dans le code.
 
 \section{Analyse de la file d'attente au niveau de couche Liaison}
 
