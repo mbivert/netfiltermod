@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.1.30)  4 FEB 2012 18:45
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.1.30)  5 FEB 2012 22:39
 entering extended mode
  %&-line parsing enabled.
 **rapport.tex
@@ -450,8 +450,8 @@ File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 ] [3]
 <hooks.png, id=21, 733.74126pt x 516.93124pt>
 File: hooks.png Graphic file (type png)
- <use hooks.png> [4 <./hooks.png (PNG copy)>] <topo.jpg, id=25, 777.90625pt x 1
-48.555pt>
+ <use hooks.png> [4 <./hooks.png (PNG copy)>] <topo.jpg, id=25, 896.34875pt x 2
+10.7875pt>
 File: topo.jpg Graphic file (type jpg)
  <use topo.jpg>
 Overfull \hbox (10.13283pt too wide) in paragraph at lines 262--266
@@ -462,19 +462,19 @@ et-tre des pa-quets ^^Ra des-ti-na-tion du r^^Seseau lan[]recepteur :
 <ping.jpg, id=26, 723.70375pt x 461.725pt>
 File: ping.jpg Graphic file (type jpg)
  <use ping.jpg> [5 <./topo.jpg>]
+[6 <./ping.jpg>]
 Overfull \hbox (29.4707pt too wide) in paragraph at lines 344--352
 []\OT1/cmr/m/n/10 Les hooks con-cer-nant les pa-quets qui tra-versent le rou-te
 ur sont : \OT1/cmr/m/it/10 NF[]IP[]PRE[]ROUTING\OT1/cmr/m/n/10 , \OT1/cmr/m/it/
 10 NF[]IP[]FORWARD
  []
 
-[6 <./ping.jpg>] <forward_post.jpg, id=34, 413.545pt x 397.485pt>
+<forward_post.jpg, id=34, 413.545pt x 397.485pt>
 File: forward_post.jpg Graphic file (type jpg)
-
-<use forward_post.jpg> <Capture-4.png, id=35, 633.36626pt x 325.215pt>
+ <use forward_post.jpg>
+<Capture-4.png, id=35, 633.36626pt x 325.215pt>
 File: Capture-4.png Graphic file (type png)
-
-<use Capture-4.png>
+ <use Capture-4.png>
 Overfull \hbox (14.77443pt too wide) in paragraph at lines 404--406
 []\OT1/cmr/m/n/10 Il nous faut donc re-garder en-tre deux autres hooks : \OT1/c
 mr/m/it/10 NF[]IP[]PRE[]ROUTING \OT1/cmr/m/n/10 et \OT1/cmr/m/it/10 NF[]IP[]POS
@@ -577,7 +577,7 @@ cm/cmr7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb><
 /usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/share/t
 exmf-texlive/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texmf-texliv
 e/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on rapport.pdf (21 pages, 569199 bytes).
+Output written on rapport.pdf (21 pages, 625303 bytes).
 PDF statistics:
  128 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
